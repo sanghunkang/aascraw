@@ -8,17 +8,17 @@ from selenium import webdriver
 def defined_driver():
 	pass
 
-def create_driver_phantomjs(system):
+def create_driver_phantomjs(system, path_driver):
 	if "linux" in system:
-		path_phantomjs = "./phantomjs"
+		path_phantomjs = path_driver + "phantomjs"
 	elif "win" in system:
-		path_phantomjs = ".\\phantomjs.exe"
+		path_phantomjs = path_driver + "phantomjs.exe"
 	ret = webdriver.PhantomJS(path_phantomjs)
 	return ret
 
-def create_driver(system, type_driver="phantomjs"):
+def create_driver(system, path_driver, type_driver="phantomjs"):
 	if type_driver == "phantomjs":
-		ret = create_driver_phantomjs(system)
+		ret = create_driver_phantomjs(system, path_driver)
 	return ret
 
 def has_iframe(driver, url):

@@ -10,21 +10,17 @@ from urllib import request
 from bs4 import BeautifulSoup
 
 # Import custom modules
-import locate_element
+from locate_element import locate_element
 from actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe
 from generate_xpathlist import get_HTMLdoc, get_list_xpath
 
 #############################################################################
 # Define constants
 SYSTEM = sys.platform
-print(SYSTEM)
-
-
-# def defined_driver():
-# 	pass
+PATH_DRIVER = os.path.abspath('..') + '/drivers/'
 
 def some_action(url):
-	driver = create_driver(SYSTEM)	
+	driver = create_driver(SYSTEM, PATH_DRIVER)	
 	driver.get(url)
 	outputs = []
 	
@@ -35,14 +31,28 @@ def some_action(url):
 	kill_phantomjs(driver)		
 	return outputs
 
+testlist = []
+
 url = "http://v.media.daum.net/v/20170602205505233"
 doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 print('++++++++++++++++++++++++++++++++++++++++')
+for xpath in get_list_xpath(soup):
+	print(xpath)
+	testlist.append(xpath)
 
-outputs = some_action(url)
-for output in outputs:
-	soup = BeautifulSoup(output, "html.parser")
-	for xpath in get_list_xpath(soup):
-		print(xpath)
-	print('++++++++++++++++++++++++++++++++++++++++')
+
+# outputs = some_action(url)
+# for output in outputs:
+# 	soup = BeautifulSoup(output, "html.parser")
+# 	for xpath in get_list_xpath(soup):
+# 		if "h3" in xpath:
+# 			print(xpath)
+# 			testlist.append(xpath)
+# 		# print(xpath)
+# 	print('++++++++++++++++++++++++++++++++++++++++')
+
+print('++++++++++++++++++++++++++++++++++++++++')
+elem = BeautifulSoup(doc, "html.parser")
+xpath = "html:0/body:0/div:1/div:2/div:0/div:0/h3:0/PATHEND"
+locate_element(elem, xpath)

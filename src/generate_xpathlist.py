@@ -20,8 +20,8 @@ def get_list_xpath(doc, path_prev="", ret=[]):
 		list_tmp.append(child.name)
 
 		if hasattr(child, "children") == True and len(list(child.children)) <= 1:			
-			ret.append(path_prev.lstrip("/") + "/"+ child.name + "[{0}]".format(i))
+			ret.append(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(i) + "/PATHEND")
 		elif hasattr(child, "children") == True:
-			get_list_xpath(child, path_prev + "/"+ child.name + "[{0}]".format(i), ret)
+			get_list_xpath(child, path_prev + "/"+ child.name + ":{0}".format(i), ret)
 	
 	return ret
