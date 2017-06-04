@@ -39,10 +39,12 @@ soup = BeautifulSoup(doc, "html.parser")
 
 print('++++++++++++++++++++++++++++++++++++++++')
 for xpath in get_list_xpath(soup):
-	if "h3" in xpath:
+	if "meta" in xpath:
 		elem_located = locate_element(soup, xpath)
-		print(elem_located.text)
-		testlist.append(xpath)
+		print(elem_located)
+
+		for attr in elem_located.attrs:
+			print(attr)
 
 # outputs = some_action(url)
 # for output in outputs:
