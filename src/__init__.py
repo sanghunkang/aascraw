@@ -38,14 +38,15 @@ doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
 print('++++++++++++++++++++++++++++++++++++++++')
-for xpath in get_list_xpath(soup, ["script"]):
-	# print(xpath)
-	if "h3" in xpath:
-		elem_located = locate_element(soup, xpath)
-		print(elem_located)
+get_list_xpath(soup, ["script","p"])
+# for xpath in get_list_xpath(soup, ["script","p"]):
+# 	# print(xpath)
+# 	if "h3" in xpath:
+# 		elem_located = locate_element(soup, xpath)
+# 		print(elem_located)
 
-		for attr in elem_located.attrs:
-			print(attr)
+# 		for attr in elem_located.attrs:
+# 			print(attr)
 
 # outputs = some_action(url)
 # for output in outputs:

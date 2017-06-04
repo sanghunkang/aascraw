@@ -27,9 +27,6 @@ def locate_element(elem, xpath, ret=[]):
 
 	type_tag_parent = tag_parent.split(":")[0]
 	index_tag_parent = int(tag_parent.split(":")[1])
-
-	# print(type_tag_parent + "   " + str(index_tag_parent))
-	# print(xpath_descendent)
 		
 	elem_new = get_children_direct(elem, type_tag_parent)[index_tag_parent]
 	

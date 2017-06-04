@@ -28,9 +28,13 @@ def get_list_xpath(doc, tags_ignored, path_prev="", ret=[]):
 	for child in doc.children:
 		i = list_tmp.count(child.name)
 		list_tmp.append(child.name)
-
+		
 		if isin_irrelevant_tag(child, tags_ignored) == True:
-			pass
+			if i == 0 and child.name == 'p':
+				print(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(i) + "/")
+			# print(child.name)
+			# print(list_tmp)
+			# print("+++++++++++++++++++++++++++++")
 		elif hasattr(child, "children") == True and len(list(child.children)) < 2:			
 			ret.append(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(i) + "/")
 		elif hasattr(child, "children") == True:
