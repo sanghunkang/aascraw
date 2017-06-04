@@ -1,8 +1,11 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # Import built-in packages
 from urllib import request
 
 # Import 3rd-party packages
-# import requests
+# import requests # do I need this?
 
 from bs4 import BeautifulSoup
 # from selenium import webdriver

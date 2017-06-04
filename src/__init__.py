@@ -10,9 +10,9 @@ from urllib import request
 from bs4 import BeautifulSoup
 
 # Import custom modules
-from locate_element import locate_element
 from actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe
 from generate_xpathlist import get_HTMLdoc, get_list_xpath
+from locate_element import locate_element
 
 #############################################################################
 # Define constants
@@ -33,14 +33,16 @@ def some_action(url):
 
 testlist = []
 
-url = "http://v.media.daum.net/v/20170602205505233"
+url = "http://v.media.daum.net/v/20170604064504680?rcmd=r"
 doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
+
 print('++++++++++++++++++++++++++++++++++++++++')
 for xpath in get_list_xpath(soup):
-	print(xpath)
-	testlist.append(xpath)
-
+	if "h3" in xpath:
+		elem_located = locate_element(soup, xpath)
+		print(elem_located.text)
+		testlist.append(xpath)
 
 # outputs = some_action(url)
 # for output in outputs:
@@ -51,8 +53,3 @@ for xpath in get_list_xpath(soup):
 # 			testlist.append(xpath)
 # 		# print(xpath)
 # 	print('++++++++++++++++++++++++++++++++++++++++')
-
-print('++++++++++++++++++++++++++++++++++++++++')
-elem = BeautifulSoup(doc, "html.parser")
-xpath = "html:0/body:0/div:1/div:2/div:0/div:0/h3:0/PATHEND"
-locate_element(elem, xpath)
