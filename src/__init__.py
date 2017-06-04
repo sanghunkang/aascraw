@@ -38,8 +38,9 @@ doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
 print('++++++++++++++++++++++++++++++++++++++++')
-for xpath in get_list_xpath(soup):
-	if "meta" in xpath:
+for xpath in get_list_xpath(soup, ["script"]):
+	# print(xpath)
+	if "h3" in xpath:
 		elem_located = locate_element(soup, xpath)
 		print(elem_located)
 

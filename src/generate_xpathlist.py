@@ -16,15 +16,24 @@ def get_HTMLdoc(url):
 	ret = req.read().decode(charset)
 	return ret
 
-def get_list_xpath(doc, path_prev="", ret=[]):
+def isin_irrelevant_tag(child, tags_ignored):
+	if child.name in tags_ignored:
+		ret = True
+	else:
+		ret = False
+	return ret
+
+def get_list_xpath(doc, tags_ignored, path_prev="", ret=[]):
 	list_tmp = []
 	for child in doc.children:
 		i = list_tmp.count(child.name)
 		list_tmp.append(child.name)
 
-		if hasattr(child, "children") == True and len(list(child.children)) <= 1:			
-			ret.append(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(i) + "/PATHEND")
+		if isin_irrelevant_tag(child, tags_ignored) == True:
+			pass
+		elif hasattr(child, "children") == True and len(list(child.children)) < 2:			
+			ret.append(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(i) + "/")
 		elif hasattr(child, "children") == True:
-			get_list_xpath(child, path_prev + "/"+ child.name + ":{0}".format(i), ret)
+			get_list_xpath(child, tags_ignored, path_prev + "/"+ child.name + ":{0}".format(i), ret)
 	
 	return ret
