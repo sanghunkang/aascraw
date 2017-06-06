@@ -21,16 +21,17 @@ def get_children_direct(elem, tag_of_interest=None):
 
 	return children_direct_relevant
 
-def locate_element(elem, xpath, ret=[]):
-	tag_parent = xpath.split("/", 1)[0]
-	xpath_descendent = xpath.split("/", 1)[1]
+def get_attr_elem(elem):
+	# return elem.attrs
+	return elem
 
-	type_tag_parent = tag_parent.split(":")[0]
-	index_tag_parent = int(tag_parent.split(":")[1])
-		
-	elem_new = get_children_direct(elem, type_tag_parent)[index_tag_parent]
+def locate_element(elem, xpath, func_to_rpt, ret=[]):
+	type_tag_parent, index_tag_parent, xpath_descendent = xpath.split("/", 2)
+	elem_new = get_children_direct(elem, type_tag_parent)[int(index_tag_parent)]
 	
-	if len(xpath_descendent.split("/")) > 1:
-		return locate_element(elem_new, xpath_descendent)
+	# print(elem_new.attrs)
+	ret.append(func_to_rpt(elem_new))
+	if len(xpath_descendent.split("/")) > 1:		
+		return locate_element(elem_new, xpath_descendent, func_to_rpt, ret)
 	else:
-		return elem_new
+		return ret
