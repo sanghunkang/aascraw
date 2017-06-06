@@ -29,10 +29,10 @@ def get_list_xpath(doc, tags_ignored, path_prev="", ret=[]):
 		if isin_irrelevant_tag(child, tags_ignored) == True:
 			if count == 0 and child.name in ["p"]:
 				# print(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(count) + "/")
-				ret.append(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(count) + "/")
+				ret.append(path_prev.lstrip("/") + "/"+ child.name + "/{0}".format(count) + "/")
 		elif hasattr(child, "children") == True and len(list(child.children)) < 2:			
-			ret.append(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(count) + "/")
+			ret.append(path_prev.lstrip("/") + "/"+ child.name + "/{0}".format(count) + "/")
 		elif hasattr(child, "children") == True:
-			get_list_xpath(child, tags_ignored, path_prev + "/"+ child.name + ":{0}".format(count), ret)
+			get_list_xpath(child, tags_ignored, path_prev + "/"+ child.name + "/{0}".format(count), ret)
 	
 	return ret
