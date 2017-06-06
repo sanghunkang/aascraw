@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe
 from generate_xpathlist import get_HTMLdoc, get_list_xpath
 from locate_element import locate_element
+from struct_detector_intra import nameyet
 
 #############################################################################
 # Define constants
@@ -37,6 +38,25 @@ doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
 
+seq_tag = []
+for descnt in soup.descendants:
+	seq_tag.append(descnt.name)
+
+print(len(seq_tag))
+set_tag = set(seq_tag)
+print(set_tag)
+dict_tag = {}
+for i, tag in enumerate(set_tag):
+	dict_tag[tag] = i#seq_tag.count(tag)
+	print(tag, dict_tag[tag])
+
+# SORT?
+seq_tag_y = [dict_tag[tag] for tag in seq_tag]
+print(seq_tag_y)
+
+import matplotlib.pyplot as plt
+plt.plot(set_tag, seq_tag_y)
+plt.show()
 # get_list_xpath(soup, ["p", "script"])
 # for xpath in get_list_xpath(soup, ["script","p"]):
 # 	# print(xpath)
@@ -46,12 +66,13 @@ soup = BeautifulSoup(doc, "html.parser")
 
 # 		for attr in elem_located.attrs:
 # 			print(attr)
-print('++++++++++++++++++++++++++++++++++++++++')
-outputs = some_action(url)
-for output in outputs:
-	soup = BeautifulSoup(output, "html.parser")
-	for xpath in get_list_xpath(soup, ["p", "script"]):
-		if "h3" in xpath:
-			print(xpath)
-		print(xpath)
-	print('++++++++++++++++++++++++++++++++++++++++')
+
+# print('++++++++++++++++++++++++++++++++++++++++')
+# outputs = some_action(url)
+# for output in outputs:
+# 	soup = BeautifulSoup(output, "html.parser")
+# 	for xpath in get_list_xpath(soup, ["p", "script"]):
+# 		if "h3" in xpath:
+# 			print(xpath)
+# 		print(xpath)
+# 	print('++++++++++++++++++++++++++++++++++++++++')
