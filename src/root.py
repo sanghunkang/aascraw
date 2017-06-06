@@ -5,8 +5,7 @@
 import os, re, sys, time
 from urllib import request
 
-# Import 3rd-party packages
-# import requests # do I need this?
+# Import external packages
 from bs4 import BeautifulSoup
 
 # Import custom modules
@@ -37,23 +36,22 @@ url = "http://v.media.daum.net/v/20170604064504680?rcmd=r"
 doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
-print('++++++++++++++++++++++++++++++++++++++++')
-get_list_xpath(soup, ["script","p"])
+
+# get_list_xpath(soup, ["p", "script"])
 # for xpath in get_list_xpath(soup, ["script","p"]):
 # 	# print(xpath)
-# 	if "h3" in xpath:
+# 	if "p" in xpath:
 # 		elem_located = locate_element(soup, xpath)
 # 		print(elem_located)
 
 # 		for attr in elem_located.attrs:
 # 			print(attr)
-
-# outputs = some_action(url)
-# for output in outputs:
-# 	soup = BeautifulSoup(output, "html.parser")
-# 	for xpath in get_list_xpath(soup):
-# 		if "h3" in xpath:
-# 			print(xpath)
-# 			testlist.append(xpath)
-# 		# print(xpath)
-# 	print('++++++++++++++++++++++++++++++++++++++++')
+print('++++++++++++++++++++++++++++++++++++++++')
+outputs = some_action(url)
+for output in outputs:
+	soup = BeautifulSoup(output, "html.parser")
+	for xpath in get_list_xpath(soup, ["p", "script"]):
+		if "h3" in xpath:
+			print(xpath)
+		print(xpath)
+	print('++++++++++++++++++++++++++++++++++++++++')
