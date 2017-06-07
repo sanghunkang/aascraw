@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe
 from generate_xpathlist import get_HTMLdoc, get_list_xpath
 from locate_element import get_attr_elem, locate_element
-from struct_detector_intra.nameyet import calculate_similarity, define_dim, get_depth_max, matrixify_xpath, subsample_seq_xpath, tensify_sumsample
+
 
 #############################################################################
 # Define constants
@@ -36,36 +36,27 @@ url = "http://v.media.daum.net/v/20170604064504680?rcmd=r"
 doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
-print(len(get_list_xpath(soup, [])))
 seq_xpath = get_list_xpath(soup, [])
-vec_index = define_dim(seq_xpath)
-depth = get_depth_max(seq_xpath)
+print(len(seq_xpath))
+from struct_detector_intra.nameyet import get_seq_subseq, get_seq_tag_uniq, get_range_tag, get_range_xpath, make_tsr_subseq, make_seq_pairdistmap
 
-size_sumsample = 4
-seq_subsample = subsample_seq_xpath(seq_xpath, size_sumsample)
 
-import numpy as np
-tsr_0 = np.zeros(shape=(size_sumsample, depth, len(vec_index)))
+seq_tag_uniq = get_seq_tag_uniq(seq_xpath)
+range_xpath = get_range_xpath(seq_xpath)
+range_tag = get_range_tag(seq_tag_uniq)
 
-for subsample in seq_subsample:
-	tsr_1 = tensify_sumsample(subsample, depth, vec_index)
-	aa = calculate_similarity(tsr_0, tsr_1)
-	tsr_0 = tsr_1
-	
-	print(aa)
-	if abs(aa) < 2:
-		for xpath in subsample:
-			print(xpath)
+len_subseq = 10
+seq_subseq = get_seq_subseq(seq_xpath, len_subseq)
+print(len(seq_subseq))
+shape_tsr = (len_subseq, range_xpath, range_tag)
 
-	print("+++++++++++++++++++++++++++++++++")
-	# print(tsr)
-	# for xpath in subsample:
-	# 	print(xpath)
-	# 	bb = matrixify_xpath(xpath, depth, vec_index)
-	# 	print(bb)
+
+seq_pairdistmap = make_seq_pairdistmap(seq_subseq, seq_tag_uniq, shape_tsr)
+for pairdistmap in seq_pairdistmap:
+	if abs(pairdistmap[1]) < 2:
+		print(pairdistmap)
 
 # for xpath in get_list_xpath(soup, []):
-# 	print("   ")
 # 	print(xpath)
 # 	# elems_located = locate_element(soup, xpath, get_attr_elem)
 # 	print(elems_located[-1].attrs)
