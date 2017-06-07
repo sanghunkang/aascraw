@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe
 from generate_xpathlist import get_HTMLdoc, get_list_xpath
 from locate_element import get_attr_elem, locate_element
+from struct_detector_intra.nameyet import calculate_similarity, define_dim, get_depth_max, matrixify_xpath, subsample_seq_xpath, tensify_sumsample
 
 #############################################################################
 # Define constants
@@ -36,11 +37,39 @@ doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
 print(len(get_list_xpath(soup, [])))
-for xpath in get_list_xpath(soup, [])[-20:]:
-	print("   ")
-	print(xpath)
-	elems_located = locate_element(soup, xpath, get_attr_elem)
-	print(elems_located[-1].attrs)
+seq_xpath = get_list_xpath(soup, [])
+vec_index = define_dim(seq_xpath)
+depth = get_depth_max(seq_xpath)
+
+size_sumsample = 4
+seq_subsample = subsample_seq_xpath(seq_xpath, size_sumsample)
+
+import numpy as np
+tsr_0 = np.zeros(shape=(size_sumsample, depth, len(vec_index)))
+
+for subsample in seq_subsample:
+	tsr_1 = tensify_sumsample(subsample, depth, vec_index)
+	aa = calculate_similarity(tsr_0, tsr_1)
+	tsr_0 = tsr_1
+	
+	print(aa)
+	if abs(aa) < 2:
+		for xpath in subsample:
+			print(xpath)
+
+	print("+++++++++++++++++++++++++++++++++")
+	# print(tsr)
+	# for xpath in subsample:
+	# 	print(xpath)
+	# 	bb = matrixify_xpath(xpath, depth, vec_index)
+	# 	print(bb)
+
+# for xpath in get_list_xpath(soup, []):
+# 	print("   ")
+# 	print(xpath)
+# 	# elems_located = locate_element(soup, xpath, get_attr_elem)
+# 	print(elems_located[-1].attrs)
+
 
 # print('++++++++++++++++++++++++++++++++++++++++')
 # outputs = some_action(url)
