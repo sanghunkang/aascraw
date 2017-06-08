@@ -7,6 +7,11 @@ from urllib import request
 # Import external packages
 import numpy as np
 
+# Import custom modules
+# Import package-wide constants
+from const_global import *
+
+
 # def get_seq_subseq(seq_xpath, len_subseq, padding):
 # 	seq_subseq = []
 # 	for i in range(len(seq_xpath)//len_subseq):
@@ -14,28 +19,28 @@ import numpy as np
 # 		seq_subseq.append(subseq)	
 # 	return seq_subseq
 
-def get_seq_subseq(seq_xpath, len_subseq):
-	seq_subseq = []
-	for i in range(len(seq_xpath) - len_subseq):
-		subseq = seq_xpath[i:i + len_subseq]
-		seq_subseq.append(subseq)	
-	return seq_subseq
+# def get_seq_subseq(seq_xpath, len_subseq):
+# 	seq_subseq = []
+# 	for i in range(len(seq_xpath) - len_subseq):
+# 		subseq = seq_xpath[i:i + len_subseq]
+# 		seq_subseq.append(subseq)	
+# 	return seq_subseq
 
-def get_seq_tag_uniq(seq_xpath):
-	"""
-	(yet to be described)
-	"""
-	seq_tag = []
-	for xpath in seq_xpath:
-		seq_tag += [tag for i, tag in enumerate(xpath.split("/")[:-1]) if i % 2 == 0]
-	seq_tag_uniq = list(set(seq_tag))
-	return seq_tag_uniq
+# def get_seq_tag_uniq(seq_xpath):
+# 	"""
+# 	(yet to be described)
+# 	"""
+# 	seq_tag = []
+# 	for xpath in seq_xpath:
+# 		seq_tag += [tag for i, tag in enumerate(xpath.split("/")[:-1]) if i % 2 == 0]
+# 	seq_tag_uniq = list(set(seq_tag))
+# 	return seq_tag_uniq
 
-def get_range_tag(seq_tag_uniq):
-	"""
-	Get number of different tags apperearing on the entire document 
-	"""
-	return len(seq_tag_uniq)
+# def get_range_tag(seq_tag_uniq):
+# 	"""
+# 	Get number of different tags apperearing on the entire document 
+# 	"""
+# 	return len(seq_tag_uniq)
 
 def get_range_xpath(seq_xpath):
 	"""
@@ -57,15 +62,18 @@ def make_matrix_xpath(xpath, seq_tag_uniq, shape):
 	
 	return matrix_xpath
 
-def make_tsr_subseq(subseq, seq_tag_uniq, shape):
-	"""
-	shape = (len_subseq, range_xpath, range_tag)
-	"""
-	tsr_subseq = np.zeros(shape=shape)	
-	for i, xpath in enumerate(subseq):
-		tsr_subseq[i] = make_matrix_xpath(xpath, seq_tag_uniq, (shape[1], shape[2]))
+# def make_tsr_subseq(subseq, seq_tag_uniq, shape):
+# 	"""
+# 	shape = (len_subseq, range_xpath, range_tag)
+# 	"""
+# 	tsr_subseq = np.zeros(shape=shape)	
+# 	for i, xpath in enumerate(subseq):
+# 		tsr_subseq[i] = make_matrix_xpath(xpath, seq_tag_uniq, (shape[1], shape[2]))
 	
-	return tsr_subseq
+# 	return tsr_subseq
+
+
+
 
 def calculate_dist_tsr(tsr0, tsr1):
 	dist = abs(np.sum(tsr0 - tsr1))
@@ -84,6 +92,11 @@ def make_seq_pairdistmap(seq_subseq, seq_tag_uniq, shape):
 			pairdistmap = ((i, i+1 + j), calculate_dist_tsr(tsr0, tsr1))
 			seq_pairdistmap.append(pairdistmap)
 	return seq_pairdistmap
+
+# def get_centered_slice(seq_xpath, index, bandwidth, priority=1)
+# 	index_start = index - (bandwidth+priority)//2 
+# 	index_end = index + (bandwidth+priority)//2
+# 	print(index_start, index_end)
 
 def make_seq_weightmap():
 	pass

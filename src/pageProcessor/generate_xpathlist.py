@@ -8,6 +8,10 @@ from urllib import request
 from bs4 import BeautifulSoup
 import numpy as np
 
+# Import custom modules
+# Import package-wide constants
+from const_global import *
+
 def get_HTMLdoc(url):
 	req = request.urlopen(url)
 	charset = req.info().get_content_charset()
@@ -38,21 +42,3 @@ def get_list_xpath(doc, tags_ignored, path_prev="", ret=[]):
 	
 	return ret
 
-def encode_xpath(xpath, seq_tagcode, range_xpath):
-	seq_tag_encoded = np.zeros(shape=(range_xpath))
-	seq_occ_encoded = np.zeros(shape=(range_xpath))
-	print(xpath)
-	seq_elem = xpath.split("/")
-	print(len(seq_elem))
-	# print(seq_elem)
-	for i in range(0, len(seq_elem)-1, 2):
-		try:
-			index = int(i/2)
-			seq_tag_encoded[index] = seq_tagcode.index(seq_elem[i])
-			seq_occ_encoded[index] = int(seq_elem[i+1])
-		except ValueError: # Trivial error not so important for now
-			pass
-	 # = [seq_tagcode.index(elem) for i, elem in enumerate(xpath.split("/")[:-1]) if i%2 == 0]
-	# seq_occ_encoded = [int(elem) for i, elem in enumerate(xpath.split("/")[:-1]) if i%2 == 1]
-	xpath_encoded = np.concatenate([[seq_tag_encoded], [seq_occ_encoded]])
-	return xpath_encoded

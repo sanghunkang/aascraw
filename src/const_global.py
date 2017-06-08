@@ -1,4 +1,12 @@
-import numpy as np
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Import built-in packages
+import os, sys
+
+SYSTEM = sys.platform
+PATH_DRIVER = os.path.abspath('..') + '/drivers/'
+
 
 SEQ_TAGCODE = [
 	"",

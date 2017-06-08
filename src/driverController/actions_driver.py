@@ -1,9 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Import 3rd-party packages
+# Import built-in packages
+# Import external packages
 import selenium
 from selenium import webdriver
+
+# Import custom modules
+# Import package-wide constants
 
 def defined_driver():
 	pass
@@ -41,3 +45,15 @@ def break_into_iframe(driver, iframe):
 def kill_phantomjs(driver):
 	driver.close()
 	driver.quit()
+
+def some_action(url):
+	driver = create_driver(SYSTEM, PATH_DRIVER)	
+	driver.get(url)
+	outputs = []
+	
+	iframes = driver.find_elements_by_tag_name('iframe')
+	for iframe in iframes:
+		outputs.append(break_into_iframe(driver, iframe))
+	
+	kill_phantomjs(driver)		
+	return outputs

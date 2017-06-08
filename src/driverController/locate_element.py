@@ -4,6 +4,10 @@
 # Import built-in packages
 import re
 
+# Import external packages
+# Import custom modules
+# Import package-wide constants
+
 def get_children_direct(elem, tag_of_interest=None):
 	try:
 		children_1st = elem.findChildren()[0]
