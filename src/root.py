@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 # Import custom modules
 from actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe
-from generate_xpathlist import get_HTMLdoc, get_list_xpath
+from generate_xpathlist import get_HTMLdoc, get_list_xpath, encode_xpath
 from locate_element import get_attr_elem, locate_element
 
 
@@ -31,8 +31,8 @@ def some_action(url):
 	kill_phantomjs(driver)		
 	return outputs
 
-url = "http://v.media.daum.net/v/20170604064504680?rcmd=r"
-# url = "https://www.booking.com/searchresults.html?label=gen173nr-1FCAEoggJCAlhYSDNiBW5vcmVmaH2IAQGYATHCAQN4MTHIAQzYAQHoAQH4AQKSAgF5qAID;sid=a5c024e1699d328fed4aef6c2b4495e9;checkin=2017-06-07;checkout=2017-06-08;city=-73635;from_idr=1;index_postcard=1&;ilp=1;lp_index_textlink2srdaterec=1;d_dcp=1"
+# url = "http://v.media.daum.net/v/20170604064504680?rcmd=r"
+url = "https://www.booking.com/searchresults.html?label=gen173nr-1FCAEoggJCAlhYSDNiBW5vcmVmaH2IAQGYATHCAQN4MTHIAQzYAQHoAQH4AQKSAgF5qAID;sid=a5c024e1699d328fed4aef6c2b4495e9;checkin=2017-06-07;checkout=2017-06-08;city=-73635;from_idr=1;index_postcard=1&;ilp=1;lp_index_textlink2srdaterec=1;d_dcp=1"
 doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
@@ -45,17 +45,32 @@ seq_tag_uniq = get_seq_tag_uniq(seq_xpath)
 range_xpath = get_range_xpath(seq_xpath)
 range_tag = get_range_tag(seq_tag_uniq)
 
-len_subseq = 10
-seq_subseq = get_seq_subseq(seq_xpath, len_subseq)
-print(len(seq_subseq))
-shape_tsr = (len_subseq, range_xpath, range_tag)
+# len_subseq = 10
+# seq_subseq = get_seq_subseq(seq_xpath, len_subseq)
+# print(len(seq_subseq))
+# shape_tsr = (len_subseq, range_xpath, range_tag)
 
+# seq_pairdistmap = make_seq_pairdistmap(seq_subseq, seq_tag_uniq, shape_tsr)
+# for pairdistmap in seq_pairdistmap:
+# 	if abs(pairdistmap[1]) < 2:
+# 		print(pairdistmap)
+import encode_tag
+import numpy as np
+shape_tsr = (len(seq_xpath), range_xpath)
+print(shape_tsr)
+seq_xpath_encoded = np.zeros(shape=shape_tsr)
+for i, xpath in enumerate(seq_xpath):
+	# print(xpath)
+	seq_xpath_encoded[i] = encode_xpath(xpath, encode_tag.SEQ_TAGCODE, range_xpath)[0]
+	# print(xpath_encoded)
+	# seq_xpath_encoded.append(xpath_encoded)
+print(seq_xpath_encoded)
 
-seq_pairdistmap = make_seq_pairdistmap(seq_subseq, seq_tag_uniq, shape_tsr)
-for pairdistmap in seq_pairdistmap:
-	if abs(pairdistmap[1]) < 2:
-		print(pairdistmap)
-
+import matplotlib.pyplot as plt
+plt.imshow(seq_xpath_encoded)
+# plt.xlim(0,16)
+plt.axes().set_aspect('auto', 'datalim')
+plt.show()
 # for xpath in get_list_xpath(soup, []):
 # 	print(xpath)
 # 	# elems_located = locate_element(soup, xpath, get_attr_elem)
