@@ -13,7 +13,7 @@ import numpy as np
 # Import custom modules
 from driverController.actions_driver import create_driver, break_into_iframe, kill_phantomjs, has_iframe, some_action
 from driverController.locate_element import get_attr_elem, locate_element
-from pageProcessor.codec_tag import make_seq_xpath_encoded, encode_xpath_2d, make_tsr_slice, get_seq_index_canddt
+from pageProcessor.codec_tag import make_seq_xpath_encoded, encode_xpath_2d, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt
 from pageProcessor.generate_xpathlist import get_HTMLdoc, get_list_xpath
 from struct_detector_intra.nameyet import get_range_xpath
 
@@ -22,7 +22,7 @@ from const_global import *
 
 #############################################################################
 # url = "http://v.media.daum.net/v/20170604064504680?rcmd=r"
-url = "https://www.booking.com/searchresults.html?label=gen173nr-1FCAEoggJCAlhYSDNiBW5vcmVmaH2IAQGYATHCAQN4MTHIAQzYAQHoAQH4AQKSAgF5qAID;sid=a5c024e1699d328fed4aef6c2b4495e9;checkin=2017-06-07;checkout=2017-06-08;city=-73635;from_idr=1;index_postcard=1&;ilp=1;lp_index_textlink2srdaterec=1;d_dcp=1"
+url = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or40-Hong_Kong_Skyline-Hong_Kong.html"
 doc = get_HTMLdoc(url)
 soup = BeautifulSoup(doc, "html.parser")
 
@@ -46,28 +46,24 @@ seq_xpath_encoded = make_seq_xpath_encoded(seq_xpath, shape_matrix)
 # plt.axes().set_aspect('auto', 'datalim')
 # plt.show()
 
-print("#############################################################################")
+
 
 depth_eval = -1
-seq_index_canddt = get_seq_index_canddt(seq_xpath_encoded, depth_eval)
+for depth_eval in range(-1, -10, -1):
+	seq_index_canddt = get_seq_index_canddt(seq_xpath_encoded, depth_eval)
+	print(seq_index_canddt)
+
+	for size_slice in range(1, 4):
+		seq_index_canddt_new = update_seq_index_canddt(seq_xpath_encoded, seq_index_canddt, size_slice)
+		seq_index_canddt = seq_index_canddt_new
+		print(seq_index_canddt)
+
+	for index_canddt in seq_index_canddt:
+		xpath = seq_xpath[index_canddt]
+		elems_located = locate_element(soup, xpath, get_attr_elem)
+		print(elems_located[-1].text)
 print("#############################################################################")
-
-size_slice = 4
-for i, index_canddt0 in enumerate(seq_index_canddt):
-	tsr0 = make_tsr_slice(seq_xpath_encoded, index_canddt0, size_slice)
-
-	for j, index_canddt1 in enumerate(seq_index_canddt[i+1:]):
-		tsr1 = make_tsr_slice(seq_xpath_encoded, index_canddt1, size_slice)
-
-		diff = tsr0 - tsr1
-		dist = np.sum(diff**2)
-		print(index_canddt0, index_canddt1, dist)
-
-# for xpath in get_list_xpath(soup, []):
-# 	print(xpath)
-# 	# elems_located = locate_element(soup, xpath, get_attr_elem)
-# 	print(elems_located[-1].attrs)
-
+print("#############################################################################")
 
 # print('++++++++++++++++++++++++++++++++++++++++')
 # outputs = some_action(url)
