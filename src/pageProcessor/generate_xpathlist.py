@@ -10,10 +10,14 @@ import numpy as np
 
 # Import custom modules
 # Import package-wide constants
-from const_global import *
+from constGlobal import *
 
 def get_HTMLdoc(url):
-	req = request.urlopen(url)
+	headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
+	
+	req = request.Request(url, headers=headers)
+	req = request.urlopen(req)
+	
 	charset = req.info().get_content_charset()
 	ret = req.read().decode(charset)
 	return ret
@@ -39,6 +43,14 @@ def get_list_xpath(doc, tags_ignored, path_prev="", ret=[]):
 			ret.append(path_prev.lstrip("/") + "/"+ child.name + "/{0}".format(count) + "/")
 		elif hasattr(child, "children") == True:
 			get_list_xpath(child, tags_ignored, path_prev + "/"+ child.name + "/{0}".format(count), ret)
-	
 	return ret
+
+
+def get_range_xpath(seq_xpath):
+	"""
+	Get the (rendered) maximum depth of xpaths
+	"""
+	seq_depth = [len(xpath.split("/")) for xpath in seq_xpath]
+	depth_max = max(seq_depth)//2
+	return depth_max
 
