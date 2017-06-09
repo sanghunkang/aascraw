@@ -8,7 +8,7 @@ import re
 # Import custom modules
 # Import package-wide constants
 
-def get_children_direct(elem, tag_of_interest=None):
+def get_children_direct(elem, tag_of_interest=None): # afraid of breaking this :()
 	try:
 		children_1st = elem.findChildren()[0]
 		children_direct = [children_1st] + children_1st.find_next_siblings()
