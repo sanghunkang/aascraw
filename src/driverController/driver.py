@@ -32,3 +32,16 @@ class webdriverTailored(ClassDriver):
 	def kill(self):
 		self.close()
 		self.quit()
+
+"""
+driver = webdriverTailored(PATH_DRIVER)
+driver.get(url)
+driver.detect_seq_iframe()
+for i, iframe in enumerate(driver.seq_iframe):
+	psrc = driver.get_pagesource_in_iframe(i)
+	soup = BeautifulSoup(psrc, "html.parser")	
+	for xpath in get_list_xpath(soup,[]): #, ["p", "script"]):
+		print(xpath)
+	print("#############################################################################")
+driver.kill()
+"""

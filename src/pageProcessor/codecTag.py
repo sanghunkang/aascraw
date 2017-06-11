@@ -63,8 +63,6 @@ def update_seq_index_canddt(seq_xpath_encoded, seq_index_canddt, size_slice):
 		for j, index_canddt1 in enumerate(seq_index_canddt[i+1:]):
 			tsr1 = make_tsr_slice(seq_xpath_encoded, index_canddt1, size_slice)
 			dist = calculate_dist_tsr(tsr0, tsr1)
-			# diff = tsr0 - tsr1
-			# dist = np.sum(diff**2)
 			print(index_canddt0, index_canddt1, dist)			
 
 			if dist < 2 and index_canddt0 not in seq_index_canddt_new:
@@ -72,3 +70,4 @@ def update_seq_index_canddt(seq_xpath_encoded, seq_index_canddt, size_slice):
 
 	seq_index_canddt_new = np.array(seq_index_canddt_new, dtype=np.int32)
 	return seq_index_canddt_new
+
