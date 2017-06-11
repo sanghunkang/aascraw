@@ -30,12 +30,15 @@ def get_attr_elem(elem):
 	return elem
 
 def locate_element(elem, xpath, func_to_rpt, ret=[]):
-	type_tag_parent, index_tag_parent, xpath_descendent = xpath.split("/", 2)
-	elem_new = get_children_direct(elem, type_tag_parent)[int(index_tag_parent)]
-	
-	# print(elem_new.attrs)
-	ret.append(func_to_rpt(elem_new))
-	if len(xpath_descendent.split("/")) > 1:		
-		return locate_element(elem_new, xpath_descendent, func_to_rpt, ret)
-	else:
-		return ret
+	try:
+		type_tag_parent, index_tag_parent, xpath_descendent = xpath.split("/", 2)
+		elem_new = get_children_direct(elem, type_tag_parent)[int(index_tag_parent)]
+		
+		# print(elem_new.attrs)
+		ret.append(func_to_rpt(elem_new))
+		if len(xpath_descendent.split("/")) > 1:		
+			return locate_element(elem_new, xpath_descendent, func_to_rpt, ret)
+		else:
+			return ret
+	except ValueError:
+		return None
