@@ -46,24 +46,15 @@ def shrink1st_seq_xpath_encoded(seq_xpath_encoded, seq_map_xpath):
 
 def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_0, seq_xpath_encoded_1):
 	if len(seq_xpath_encoded_0) < len(seq_xpath_encoded_1):
-		sxe0 = seq_xpath_encoded_0
-		sxe1 = seq_xpath_encoded_1
+		sxe0, sxe1 = seq_xpath_encoded_0, seq_xpath_encoded_1
 	else:
-		sxe0 = seq_xpath_encoded_1
-		sxe1 = seq_xpath_encoded_0
+		sxe0, sxe1 = seq_xpath_encoded_1, seq_xpath_encoded_0
 
-	map_sxe0 = []
-	map_sxe1 = []
-
-	i = 0
-	fwdstep = 0
-	backstep = 0
+	map_sxe0, map_sxe1 = [], []
+	i, fwdstep, backstep= 0, 0, 0
 	while i < sxe0.shape[0]:
 		try:		
 			if np.array_equal(sxe0[i], sxe1[i+fwdstep+backstep]):
-				print(i, i + fwdstep + backstep)
-				print(sxe0[i])
-				print(sxe1[i + fwdstep + backstep])
 				map_sxe0.append(i)
 				map_sxe1.append(i + fwdstep + backstep)
 				i += 1

@@ -39,7 +39,6 @@ range_xpath0 = get_range_xpath(seq_xpath0)
 shape_matrix0 = (len(seq_xpath0), range_xpath0)
 
 seq_xpath_encoded0 = make_seq_xpath_encoded(seq_xpath0, shape_matrix0)
-print(seq_xpath_encoded0.shape)
 
 # # sampl2
 url1 = url1
@@ -52,23 +51,16 @@ range_xpath1 = get_range_xpath(seq_xpath1)
 shape_matrix1 = (len(seq_xpath1), range_xpath1)
 
 seq_xpath_encoded1 = make_seq_xpath_encoded(seq_xpath1, shape_matrix1)
-print(seq_xpath_encoded1.shape)
-print("#############################################################################")
+####################################
 
 unqseq_xpath_encoded0 = get_unqseq_xpath_encoded(seq_xpath_encoded0)
-print(unqseq_xpath_encoded0.shape)
 unqseq_xpath_encoded1 = get_unqseq_xpath_encoded(seq_xpath_encoded1)
-print(unqseq_xpath_encoded1.shape)
-print("#############################################################################")
 
 intersect_xpath_encoded = get_intersect_xpath_encoded(unqseq_xpath_encoded0, unqseq_xpath_encoded1)
-print(len(intersect_xpath_encoded))	
 
 
 seq_map_xpath0 = make_map(seq_xpath_encoded0, intersect_xpath_encoded)
-print(len(seq_map_xpath0))
 seq_map_xpath1 = make_map(seq_xpath_encoded1, intersect_xpath_encoded)
-print(len(seq_map_xpath1))
 
 
 shrunk1stseq_xpath_encoded0 = shrink1st_seq_xpath_encoded(seq_xpath_encoded0, seq_map_xpath0)
@@ -81,11 +73,13 @@ print(seq_map1)
 print("#############################################################################")
 filteredseq_xpath0 = get_filteredseq_xpath(seq_xpath0, seq_map0)
 for xpath in filteredseq_xpath0:
-	print(xpath)
+	# print(xpath)
 	elems_located = locate_element(soup0, xpath, get_attr_elem)
 	try:
+		# a = elems_located[-1].text
 		print(elems_located[-1].text)
 	except TypeError:
+		# a = ""
 		print(TypeError)
 
 
