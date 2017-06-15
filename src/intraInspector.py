@@ -10,8 +10,12 @@ import numpy as np
 from constGlobal import *
 
 class intraInspector():
-	def __init__(self, seq_xpath_encoded_3d):
+	def __init__(self, seq_xpath):
 		pass
+
+	def label_max():
+		for xpath in 
+		# Calculate 
 
 def get_max_size_window(seq_xpath_encoded_3d):
 	max_size_window = seq_xpath_encoded_3d.shape[0]//2

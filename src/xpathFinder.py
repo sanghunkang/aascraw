@@ -57,6 +57,8 @@ class XpathFinder():
 		# Initial actions upon instantiation
 		self.get_HTMLdoc(url)
 		self.make_seq_xpath(self.soup)
+		
+		self.filter_seq_xpath()
 		self.make_shape_seq_xpath()
 		self.make_seq_xpath_encoded_2d()
 		self.make_seq_xpath_encoded_3d()
@@ -88,6 +90,14 @@ class XpathFinder():
 
 			elif type(child) == bs4.element.NavigableString:
 				self.seq_xpath.append(self.__path_prev.lstrip("/")) # + str(child.name) + "/{0}".format(count) + "/")
+
+	def filter_seq_xpath(self):
+		# Set operation doesn't preserve the order
+		seq_xpath_filtered = []
+		for xpath in self.seq_xpath:
+			if xpath not in seq_xpath_filtered:
+				seq_xpath_filtered.append(xpath)
+		self.seq_xpath = seq_xpath_filtered
 
 	def make_shape_seq_xpath(self):
 		seq_depth = [len(xpath.split("/")) for xpath in self.seq_xpath]

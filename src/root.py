@@ -3,6 +3,7 @@
 
 # Import built-in packages
 import os, re, sys, time
+from itertools import chain
 from urllib import request
 
 # Import external packages
@@ -86,10 +87,10 @@ from constGlobal import *
 # Intra
 url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
 # url = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
-# soup = get_HTMLdoc(url)
 
 xpathFinder = XpathFinder(url)
 seq_xpath = xpathFinder.get_seq_xpath()
+
 seq_xpath_encoded_2d = xpathFinder.get_seq_xpath_encoded_2d()
 seq_xpath_encoded_3d = xpathFinder.get_seq_xpath_encoded_3d()
 
@@ -101,45 +102,58 @@ print(seq_xpath_encoded_2d.shape)
 print(seq_xpath_encoded_3d.shape)
 soup = xpathFinder.soup
 
-depth_eval = 1
-# seq_index_canddt = get_seq_index_canddt(seq_xpath_encoded_3d, depth_eval)
-# print(seq_index_canddt)
+
+seq_xpath_canddt = []
+for xpath in seq_xpath:
+	if re.search(r"div/\d/$", xpath):
+		print(xpath)
+		seq_xpath_canddt.append(xpath)
+
+for xpath in seq_xpath_canddt:
+	print("#############################################################################")
+	print(xpath)
+	elems_located = locate_element(soup, xpath, get_attr_elem)
+	print(elems_located[-1].text)
+
+
+"""
 seq_index_canddt = []
-for i, xpath_encoded_3d in enumerate(seq_xpath_encoded_3d):
-	if np.sum(xpath_encoded_3d[:,0]) == (depth_eval -1):
-		print(xpath_encoded_3d[:,0])
-		seq_index_canddt.append(i)
-print(len(seq_index_canddt))
+for i, xpath_encoded_3d_0 in enumerate(seq_xpath_encoded_3d):
+	for j, xpath_encoded_3d_1 in enumerate(seq_xpath_encoded_3d[i+1:]):
+		seq_index_canddt.append((i, i+1+j))
 
 
-# ccc = []
-# for th in range(max(aa_raw)):
-# 	cc = 0
-# 	for i in aa_raw:
-# 		cc += (i - th)**2
-# 	print(th, cc)
-# 	ccc.append(cc)
-# plt.plot(ccc)
-# plt.show()
+print(time.time())
+dict_canddt = []
+aa = []
+seq_index_canddt_new = []
 
-# plt.plot(aa_raw)
-# # plt.plot(x=3)
-# plt.show()
+for size_window in range(1, 30):
+	print("+++++++++++++++++++++++", str(size_window), "+++++++++++++++++++++++")
+	print(len(seq_index_canddt))
+	aa.append(len(seq_index_canddt))
 
+	dict_canddt.append(set(chain.from_iterable(seq_index_canddt)))
+	
+	for index_canddt in seq_index_canddt:
+		tsr_target = make_tsr_slice(seq_xpath_encoded_3d, index_canddt[0], size_window)
+		tsr_compared = make_tsr_slice(seq_xpath_encoded_3d, index_canddt[1], size_window)
+		dist = calculate_dist_tsr(tsr_target, tsr_compared)
+		
+		if dist <= 0:
+			seq_index_canddt_new.append(index_canddt)
+	
+	seq_index_canddt = seq_index_canddt_new
+	seq_index_canddt_new = []
 
-# aa_ma_4 = []
-# for i, aa_raw in enumerate(aa_raw_aug):
-# 	a = sum(aa_raw_aug[i:i+4])
-# 	b = sum(aa_raw_aug[i+1:i+4+1])
-# 	aa_ma_4.append(0.5*a + 0.5*b)
+	print(time.time())
 
-# def apply_ma_filter
-
-# print(len(aa_ma_4))
-
-# plt.plot(aa_ma_4)
-# plt.show()
-
+for i, x in enumerate(dict_canddt):
+	z = list(x)
+	z.sort()
+	print(i)
+	print(z)
+"""
 
 # max_ws = get_max_size_window(seq_xpath_encoded_3d)
 
