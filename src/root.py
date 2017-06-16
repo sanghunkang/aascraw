@@ -15,7 +15,7 @@ import numpy as np
 from driverController.driver import webdriverTailored
 from driverController.locator import get_attr_elem, locate_element
 from interInspector import get_unqseq_xpath_encoded, get_intersect_xpath_encoded, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
-from intraInspector import get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
+from intraInspector import IntraInspector, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
 
 # Import package-wide constants
@@ -105,15 +105,17 @@ soup = xpathFinder.soup
 
 seq_xpath_canddt = []
 for xpath in seq_xpath:
-	if re.search(r"div/\d/$", xpath):
+	if re.search(r"div/[5-9]/$", xpath):
 		print(xpath)
 		seq_xpath_canddt.append(xpath)
 
-for xpath in seq_xpath_canddt:
-	print("#############################################################################")
-	print(xpath)
-	elems_located = locate_element(soup, xpath, get_attr_elem)
-	print(elems_located[-1].text)
+intraInspector = IntraInspector(xpathFinder.seq_xpath_encoded_occurence)
+intraInspector.make_map_candidacy()
+# for xpath in seq_xpath_canddt:
+# 	print("#############################################################################")
+# 	print(xpath)
+# 	elems_located = locate_element(soup, xpath, get_attr_elem)
+# 	print(elems_located[-1].text)
 
 
 """

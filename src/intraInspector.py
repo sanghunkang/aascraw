@@ -9,13 +9,26 @@ import numpy as np
 # Import package-wide constants
 from constGlobal import *
 
-class intraInspector():
-	def __init__(self, seq_xpath):
-		pass
+class IntraInspector():
+	def __init__(self, seq_xpath_encoded_occurence):
 
-	def label_max():
-		for xpath in 
-		# Calculate 
+		self.seq_xpath_encoded_occurence = seq_xpath_encoded_occurence
+	def make_map_candidacy(self):
+		seq_xpath_encoded_occurence = self.seq_xpath_encoded_occurence
+
+		for i, xpath_encoded_occurence in enumerate(seq_xpath_encoded_occurence):
+			print(i, max(xpath_encoded_occurence), ": ", self.get_metric_candadacy(xpath_encoded_occurence), xpath_encoded_occurence, )
+
+
+	def get_metric_candadacy(self, xpath_encoded_occurence):
+		var_input0 = max(xpath_encoded_occurence)
+		var_input1 = xpath_encoded_occurence.tolist().index(max(xpath_encoded_occurence)) + 1
+		
+		var_output = (var_input0**2) - (var_input1**2)
+		return var_output
+
+
+		# bigger -> more bigger, 
 
 def get_max_size_window(seq_xpath_encoded_3d):
 	max_size_window = seq_xpath_encoded_3d.shape[0]//2

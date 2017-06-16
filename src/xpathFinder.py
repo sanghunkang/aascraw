@@ -27,20 +27,19 @@ from constGlobal import *
 # 	return soup
 
 def encode_xpath(xpath, seq_tagcode, range_xpath):
-	# xpath_encoded = np.zeros(shape=(2, range_xpath), dtype=np.int32)
-	xpath_encoded = np.zeros(shape=(range_xpath), dtype=np.int32)
+	xpath_encoded_tagname = np.zeros(shape=(range_xpath), dtype=np.int32)
+	xpath_encoded_occurence = np.zeros(shape=(range_xpath), dtype=np.int32)
 	seq_elem = xpath.split("/")
 	
 	for i in range(0, len(seq_elem)-1, 2):
 		try:
 			index = int(i/2)
-			xpath_encoded[index] = SEQ_TAGCODE.index(seq_elem[i])
-			# xpath_encoded[0, index] = SEQ_TAGCODE.index(seq_elem[i])
-			# xpath_encoded[1, index] = int(seq_elem[i+1])
+			xpath_encoded_tagname[index] = SEQ_TAGCODE.index(seq_elem[i])
+			xpath_encoded_occurence[index] = int(seq_elem[i+1])
 		except ValueError: # Trivial error not so important for now
 			pass
 
-	return xpath_encoded
+	return xpath_encoded_tagname, xpath_encoded_occurence
 
 class XpathFinder():
 	def __init__(self, url):
@@ -53,12 +52,14 @@ class XpathFinder():
 		self.seq_xpath = []
 		self.shape_seq_xpath = ()
 		self.seq_xpath_encoded_2d = []
+		self.seq_xpath_encoded_occurence = []
 
 		# Initial actions upon instantiation
 		self.get_HTMLdoc(url)
-		self.make_seq_xpath(self.soup)
+		# self.make_seq_xpath(self.soup)
 		
 		self.filter_seq_xpath()
+		self.run_make_seq_xpath()
 		self.make_shape_seq_xpath()
 		self.make_seq_xpath_encoded_2d()
 		self.make_seq_xpath_encoded_3d()
@@ -75,6 +76,10 @@ class XpathFinder():
 		self.soup = BeautifulSoup(doc, "html.parser")
 		# return soup
 
+	def run_make_seq_xpath(self):
+		# Becasue make_seq_xpath is a recursive action
+		self.make_seq_xpath(self.soup)
+	
 	def make_seq_xpath(self, elem):
 		list_tmp = []
 		for child in elem.children:
@@ -106,9 +111,11 @@ class XpathFinder():
 	def make_seq_xpath_encoded_2d(self):
 		shape = self.shape_seq_xpath
 		self.seq_xpath_encoded_2d = np.zeros(shape=shape, dtype=np.int32)
+		self.seq_xpath_encoded_occurence = np.zeros(shape=shape, dtype=np.int32)
 		
 		for i, xpath in enumerate(self.seq_xpath):
-			self.seq_xpath_encoded_2d[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])
+			self.seq_xpath_encoded_2d[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[0]
+			self.seq_xpath_encoded_occurence[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[1]
 
 	def make_seq_xpath_encoded_3d(self):
 		shape = self.shape_seq_xpath
