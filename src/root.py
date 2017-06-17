@@ -13,7 +13,7 @@ import numpy as np
 
 # Import custom modules
 from driverController.driver import webdriverTailored
-from driverController.locator import get_attr_elem, locate_element
+from driverController.locator import get_attr_elem, locate_element, get_eigentext
 from interInspector import get_unqseq_xpath_encoded, get_intersect_xpath_encoded, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
 from intraInspector import IntraInspector, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
@@ -85,12 +85,13 @@ from constGlobal import *
 
 #############################################################################
 # Intra
-url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
+url = "https://www.amazon.com/s?rh=i%3Akitchen%2Cn%3A1055398%2Cn%3A%211063498%2Cn%3A284507%2Cn%3A915194%2Cn%3A289748%2Cp_89%3ADeLonghi%2Cp_6%3AATVPDKIKX0DER&bbn=289748&ie=UTF8&ref=vs_cte_r1_c1_delonghi&pf_rd_r=XJ4PFY14DAG7JD44YNAN&pf_rd_m=ATVPDKIKX0DER&pf_rd_t=Landing&pf_rd_i=915194&pf_rd_p=c3a7580e-3bde-4497-8e61-232d912a1aeb&pf_rd_s=merchandised-search-grid-t1-r1-c1"
 # url = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
 
 xpathFinder = XpathFinder(url)
 seq_xpath = xpathFinder.get_seq_xpath()
 
+seq_xpath_encoded_occurence = xpathFinder.get_seq_xpath_encoded_occurence()
 seq_xpath_encoded_2d = xpathFinder.get_seq_xpath_encoded_2d()
 seq_xpath_encoded_3d = xpathFinder.get_seq_xpath_encoded_3d()
 
@@ -102,21 +103,21 @@ print(seq_xpath_encoded_2d.shape)
 print(seq_xpath_encoded_3d.shape)
 soup = xpathFinder.soup
 
+intraInspector = IntraInspector(seq_xpath_encoded_2d, seq_xpath_encoded_occurence)
+seq_set_canddt = intraInspector.get_seq_set_canddt()
 
-seq_xpath_canddt = []
-for xpath in seq_xpath:
-	if re.search(r"div/[5-9]/$", xpath):
-		print(xpath)
-		seq_xpath_canddt.append(xpath)
+for set_canddt in seq_set_canddt:
+	print("#############################################################################")
+	for canddt in set_canddt:
+		print("_____________________________________________________________________________")
+		print(canddt)
+		xpath = seq_xpath[canddt[0]]
+		elems_located = locate_element(soup, xpath, get_attr_elem)
+		eigentext = get_eigentext(elems_located[-1])
 
-intraInspector = IntraInspector(xpathFinder.seq_xpath_encoded_occurence)
-intraInspector.make_map_candidacy()
-# for xpath in seq_xpath_canddt:
-# 	print("#############################################################################")
-# 	print(xpath)
-# 	elems_located = locate_element(soup, xpath, get_attr_elem)
-# 	print(elems_located[-1].text)
+		print(eigentext)
 
+# Potentially some needed but skip for now...
 
 """
 seq_index_canddt = []

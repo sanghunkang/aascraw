@@ -56,10 +56,10 @@ class XpathFinder():
 
 		# Initial actions upon instantiation
 		self.get_HTMLdoc(url)
-		# self.make_seq_xpath(self.soup)
 		
-		self.filter_seq_xpath()
 		self.run_make_seq_xpath()
+		self.filter_seq_xpath()
+
 		self.make_shape_seq_xpath()
 		self.make_seq_xpath_encoded_2d()
 		self.make_seq_xpath_encoded_3d()
@@ -127,6 +127,9 @@ class XpathFinder():
 	# Getters
 	def get_seq_xpath(self):
 		return self.seq_xpath
+
+	def get_seq_xpath_encoded_occurence(self):
+		return self.seq_xpath_encoded_occurence
 
 	def get_seq_xpath_encoded_2d(self):
 		return self.seq_xpath_encoded_2d

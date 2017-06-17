@@ -42,3 +42,10 @@ def locate_element(elem, xpath, func_to_rpt, ret=[]):
 			return ret
 	except ValueError:
 		return None
+
+def get_eigentext(elem):
+	elem_str = str(elem)
+	pattern = re.compile(r"<.*?>(.*?)<.*?>", re.DOTALL)
+	str_match = pattern.match(elem_str).group(0)	
+	str_stripped = re.sub(r"<.*?>", "", str_match, re.DOTALL)
+	return str_stripped

@@ -10,25 +10,100 @@ import numpy as np
 from constGlobal import *
 
 class IntraInspector():
-	def __init__(self, seq_xpath_encoded_occurence):
-
+	def __init__(self, seq_xpath_encoded_2d, seq_xpath_encoded_occurence):
+		self.seq_xpath_encoded_2d = seq_xpath_encoded_2d
 		self.seq_xpath_encoded_occurence = seq_xpath_encoded_occurence
-	def make_map_candidacy(self):
-		seq_xpath_encoded_occurence = self.seq_xpath_encoded_occurence
 
-		for i, xpath_encoded_occurence in enumerate(seq_xpath_encoded_occurence):
-			print(i, max(xpath_encoded_occurence), ": ", self.get_metric_candadacy(xpath_encoded_occurence), xpath_encoded_occurence, )
+		self.seq_map_candidacy = []
+		self.seq_set_canddt = []
 
+		# Initial actions upon instantiation
+		self.make_seq_map_candidacy()
+		self.uniqfy_seq_map_candidacy()
+		self.make_seq_set_canddt()
 
-	def get_metric_candadacy(self, xpath_encoded_occurence):
-		var_input0 = max(xpath_encoded_occurence)
-		var_input1 = xpath_encoded_occurence.tolist().index(max(xpath_encoded_occurence)) + 1
+	def make_map_candidacy(self, i, xpath_encoded_occurence):
+		var_input0 = self.calculate_index_var0(xpath_encoded_occurence)
+		var_input1 = self.calculate_index_var1(xpath_encoded_occurence)
+		map_candidacy = (i, var_input1, self.calculate_metric_candadacy(var_input0, var_input1))
 		
+		self.seq_map_candidacy.append(map_candidacy)
+
+	def make_seq_map_candidacy(self):#, seq_xpath_encoded_occurence):
+		seq_xpath_encoded_occurence = self.seq_xpath_encoded_occurence
+		
+		self.seq_map_candidacy = []
+				
+		for i, xpath_encoded_occurence in enumerate(seq_xpath_encoded_occurence):
+			self.make_map_candidacy(i, xpath_encoded_occurence)
+
+		self.seq_map_candidacy.sort(key=lambda x: x[2])
+		self.seq_map_candidacy.reverse()	
+		# self.seq_map_candidacy = seq_map_candidacy
+
+	def uniqfy_seq_map_candidacy(self):
+		seq_xpath_encoded_2d = self.seq_xpath_encoded_2d
+		seq_map_candidacy = self.get_seq_map_candidacy()
+
+		seq_xpath_encoded_2d_uniq = []
+		seq_map_candidacy_uniq = []
+		for map_candidacy in seq_map_candidacy:
+			xpath_encoded_2d = seq_xpath_encoded_2d[map_candidacy[0]]
+			xpath_encoded_2d_cut = xpath_encoded_2d[:map_candidacy[1]].tolist()
+			
+			if xpath_encoded_2d_cut not in seq_xpath_encoded_2d_uniq:
+				seq_xpath_encoded_2d_uniq.append(xpath_encoded_2d_cut)
+				seq_map_candidacy_uniq.append(map_candidacy)
+
+		seq_map_candidacy_uniq.sort(key=lambda x: x[2])
+		seq_map_candidacy_uniq.reverse()
+		self.seq_map_candidacy_uniq = seq_map_candidacy_uniq
+
+	def make_set_canddt(self, xpath_encoded_2d_target, map_candidacy):
+		seq_xpath_encoded_2d = self.seq_xpath_encoded_2d
+
+		set_canddt = []
+		for i, xpath_encoded_2d_compared in enumerate(seq_xpath_encoded_2d):
+			if xpath_encoded_2d_compared[:map_candidacy[1]].tolist() == xpath_encoded_2d_target[:map_candidacy[1]].tolist():
+				set_canddt.append([i, xpath_encoded_2d_compared[map_candidacy[1]:]])
+
+		return set_canddt
+
+	def make_seq_set_canddt(self, cutoff=5):
+		seq_xpath_encoded_2d = self.seq_xpath_encoded_2d
+		seq_map_candidacy_uniq = self.get_seq_map_candidacy_uniq()
+
+		seq_set_canddt = []
+		for map_candidacy in seq_map_candidacy_uniq[:cutoff]: # Inspect top 5 candidate
+			xpath_encoded_2d_target = seq_xpath_encoded_2d[map_candidacy[0]]
+			seq_set_canddt.append(self.make_set_canddt(xpath_encoded_2d_target, map_candidacy))
+
+		self.seq_set_canddt = seq_set_canddt
+
+	def calculate_index_var0(self, xpath_encoded_occurence):
+		# Maximum of numbers to tags
+		var_input0 = max(xpath_encoded_occurence)
+		return var_input0
+
+	def calculate_index_var1(self, xpath_encoded_occurence):
+		# Where the max appears
+		var_input1 = xpath_encoded_occurence.tolist().index(max(xpath_encoded_occurence)) + 1
+		return var_input1
+
+	def calculate_metric_candadacy(self, var_input0, var_input1):
+		# Some metric to select the most probable pattern(s)	
 		var_output = (var_input0**2) - (var_input1**2)
 		return var_output
 
+	def get_seq_map_candidacy(self):
+		return self.seq_map_candidacy
 
-		# bigger -> more bigger, 
+	def get_seq_map_candidacy_uniq(self):
+		return self.seq_map_candidacy_uniq
+
+	def get_seq_set_canddt(self):
+		return self.seq_set_canddt
+
 
 def get_max_size_window(seq_xpath_encoded_3d):
 	max_size_window = seq_xpath_encoded_3d.shape[0]//2
