@@ -8,86 +8,96 @@ from urllib import request
 
 # Import external packages
 from bs4 import BeautifulSoup
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom modules
 from driverController.driver import webdriverTailored
 from driverController.locator import get_attr_elem, locate_element, get_eigentext
-from interInspector import get_unqseq_xpath_encoded, get_intersect_xpath_encoded, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
-from intraInspector import IntraInspector, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
+from interInspector import InterInspector, get_intersect_xpath_encoded, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
+from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
 
 # Import package-wide constants
 from constGlobal import *
 
 #############################################################################
+print("INITIATED!")
 # url0 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or30-Hong_Kong_Skyline-Hong_Kong.html"
 # url1 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or40-Hong_Kong_Skyline-Hong_Kong.html"
-# # url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
-# # url = "http://v.media.daum.net/v/20170609204506833?rcmd=r"
-# # url0 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=155256"
-# # url1 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
+# url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
+# url = "http://v.media.daum.net/v/20170609204506833?rcmd=r"
+url0 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=155256"
+url1 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
+url2 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=137326"
 
-# # sampl1
-# url0 = url0
-# doc0 = get_HTMLdoc(url0)
-# soup0 = BeautifulSoup(doc0, "html.parser")
-# xpathFinder0 = XpathFinder()
-# seq_xpath0 = xpathFinder0.make_seq_xpath(soup0)
+# sampl1
+xpathFinder0 = XpathFinder(url0)
+xpathFinder1 = XpathFinder(url1)
+xpathFinder2 = XpathFinder(url2)
 
-# range_xpath0 = get_range_xpath(seq_xpath0)
-# shape_matrix0 = (len(seq_xpath0), range_xpath0)
+seq_xpath0 = xpathFinder0.get_seq_xpath()
+seq_xpath1 = xpathFinder1.get_seq_xpath()
+seq_xpath2 = xpathFinder2.get_seq_xpath()
 
-# seq_xpath_encoded0 = make_seq_xpath_encoded(seq_xpath0, shape_matrix0)
+print(xpathFinder0.get_shape_seq_xpath())
+print(xpathFinder1.get_shape_seq_xpath())
 
-# # # sampl2
-# url1 = url1
-# doc1 = get_HTMLdoc(url1)
-# soup1 = BeautifulSoup(doc1, "html.parser")
-# xpathFinder1 = XpathFinder()
-# seq_xpath1 = xpathFinder1.make_seq_xpath(soup1)
+seq_xpath_encoded0 = xpathFinder0.get_seq_xpath_encoded_2d()
+seq_xpath_encoded1 = xpathFinder1.get_seq_xpath_encoded_2d()
+seq_xpath_encoded2 = xpathFinder2.get_seq_xpath_encoded_2d()
 
-# range_xpath1 = get_range_xpath(seq_xpath1)
-# shape_matrix1 = (len(seq_xpath1), range_xpath1)
+uniqseq_xpath_encoded0 = xpathFinder0.get_uniqseq_xpath_encoded()
+uniqseq_xpath_encoded1 = xpathFinder1.get_uniqseq_xpath_encoded()
+uniqseq_xpath_encoded2 = xpathFinder2.get_uniqseq_xpath_encoded()
+#############################################################################
 
-# seq_xpath_encoded1 = make_seq_xpath_encoded(seq_xpath1, shape_matrix1)
-# ####################################
-
-# unqseq_xpath_encoded0 = get_unqseq_xpath_encoded(seq_xpath_encoded0)
-# unqseq_xpath_encoded1 = get_unqseq_xpath_encoded(seq_xpath_encoded1)
-
-# intersect_xpath_encoded = get_intersect_xpath_encoded(unqseq_xpath_encoded0, unqseq_xpath_encoded1)
+interInspector = InterInspector()
+intersect_xpath_encoded = get_intersect_xpath_encoded(
+	uniqseq_xpath_encoded0, uniqseq_xpath_encoded1)
 
 
-# seq_map_xpath0 = make_map(seq_xpath_encoded0, intersect_xpath_encoded)
-# seq_map_xpath1 = make_map(seq_xpath_encoded1, intersect_xpath_encoded)
+seq_map_xpath0 = make_map(seq_xpath_encoded0, intersect_xpath_encoded)
+seq_map_xpath1 = make_map(seq_xpath_encoded1, intersect_xpath_encoded)
 
 
-# shrunk1stseq_xpath_encoded0 = shrink1st_seq_xpath_encoded(seq_xpath_encoded0, seq_map_xpath0)
-# shrunk1stseq_xpath_encoded1 = shrink1st_seq_xpath_encoded(seq_xpath_encoded1, seq_map_xpath1)
+shrunk1stseq_xpath_encoded0 = shrink1st_seq_xpath_encoded(seq_xpath_encoded0, seq_map_xpath0)
+shrunk1stseq_xpath_encoded1 = shrink1st_seq_xpath_encoded(seq_xpath_encoded1, seq_map_xpath1)
 
-# seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded0, seq_xpath_encoded1)
-# print(seq_map0)
-# print(seq_map1)
+seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded0, seq_xpath_encoded1)
 
-# print("#############################################################################")
-# filteredseq_xpath0 = get_filteredseq_xpath(seq_xpath0, seq_map0)
-# for xpath in filteredseq_xpath0:
-# 	# print(xpath)
-# 	elems_located = locate_element(soup0, xpath, get_attr_elem)
-# 	try:
-# 		# a = elems_located[-1].text
-# 		print(elems_located[-1].text)
-# 	except TypeError:
-# 		# a = ""
-# 		print(TypeError)
+filteredseq_xpath0 = get_filteredseq_xpath(seq_xpath0, seq_map0)
+filteredseq_xpath1 = get_filteredseq_xpath(seq_xpath1, seq_map1)
+
+print(len(filteredseq_xpath0))
+print(len(filteredseq_xpath1))
+
+soup0 = xpathFinder0.get_soup()
+soup1 = xpathFinder1.get_soup()
+
+# for xpath0, xpath1 in zip(filteredseq_xpath0, filteredseq_xpath1):
+for i in range(20, len(filteredseq_xpath0)):
+	print("#############################################################################")
+	xpath0 = seq_xpath0[seq_map0[i]]
+	xpath1 = seq_xpath1[seq_map1[i]]
+	print(xpath0)
+	print(xpath1)
+	# elems_located0 = locate_element(soup0, xpath0, get_attr_elem)
+	# elems_located1 = locate_element(soup1, xpath1, get_attr_elem)
+	try:
+		eigentext0 = get_eigentext(locate_element(soup0, xpath0, get_attr_elem))
+		eigentext1 = get_eigentext(locate_element(soup1, xpath1, get_attr_elem))
+		print(eigentext0)
+		print("_______________________________________________________________")
+		print(eigentext1)
+	except TypeError:
+		print(TypeError)
 
 #############################################################################
 # Intra
 url = "https://www.amazon.com/s?rh=i%3Akitchen%2Cn%3A1055398%2Cn%3A%211063498%2Cn%3A284507%2Cn%3A915194%2Cn%3A289748%2Cp_89%3ADeLonghi%2Cp_6%3AATVPDKIKX0DER&bbn=289748&ie=UTF8&ref=vs_cte_r1_c1_delonghi&pf_rd_r=XJ4PFY14DAG7JD44YNAN&pf_rd_m=ATVPDKIKX0DER&pf_rd_t=Landing&pf_rd_i=915194&pf_rd_p=c3a7580e-3bde-4497-8e61-232d912a1aeb&pf_rd_s=merchandised-search-grid-t1-r1-c1"
 # url = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
-
+"""
 xpathFinder = XpathFinder(url)
 seq_xpath = xpathFinder.get_seq_xpath()
 
@@ -118,7 +128,7 @@ for set_canddt in seq_set_canddt:
 		print(eigentext)
 
 # Potentially some needed but skip for now...
-
+"""
 """
 seq_index_canddt = []
 for i, xpath_encoded_3d_0 in enumerate(seq_xpath_encoded_3d):

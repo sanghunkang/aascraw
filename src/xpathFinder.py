@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Import built-in packages
+import re
 from urllib import request
 
 # Import external packages
@@ -52,6 +53,7 @@ class XpathFinder():
 		self.seq_xpath = []
 		self.shape_seq_xpath = ()
 		self.seq_xpath_encoded_2d = []
+		self.uniqseq_xpath_encoded = []
 		self.seq_xpath_encoded_occurence = []
 
 		# Initial actions upon instantiation
@@ -62,6 +64,7 @@ class XpathFinder():
 
 		self.make_shape_seq_xpath()
 		self.make_seq_xpath_encoded_2d()
+		self.make_uniqseq_xpath_encoded()
 		self.make_seq_xpath_encoded_3d()
 
 	def get_HTMLdoc(self, url):
@@ -78,7 +81,7 @@ class XpathFinder():
 
 	def run_make_seq_xpath(self):
 		# Becasue make_seq_xpath is a recursive action
-		self.make_seq_xpath(self.soup)
+		self.make_seq_xpath(self.get_soup())
 	
 	def make_seq_xpath(self, elem):
 		list_tmp = []
@@ -98,11 +101,17 @@ class XpathFinder():
 
 	def filter_seq_xpath(self):
 		# Set operation doesn't preserve the order
-		seq_xpath_filtered = []
+		seq_xpath_filtered_once = []
 		for xpath in self.seq_xpath:
-			if xpath not in seq_xpath_filtered:
-				seq_xpath_filtered.append(xpath)
-		self.seq_xpath = seq_xpath_filtered
+			if xpath not in seq_xpath_filtered_once:
+				seq_xpath_filtered_once.append(xpath)
+
+		seq_xpath_filtered_twice = []
+		for xpath in seq_xpath_filtered_once:
+			if re.search(r"script|style", xpath) == None:
+				seq_xpath_filtered_twice.append(xpath)
+
+		self.seq_xpath = seq_xpath_filtered_twice
 
 	def make_shape_seq_xpath(self):
 		seq_depth = [len(xpath.split("/")) for xpath in self.seq_xpath]
@@ -117,6 +126,10 @@ class XpathFinder():
 			self.seq_xpath_encoded_2d[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[0]
 			self.seq_xpath_encoded_occurence[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[1]
 
+	def make_uniqseq_xpath_encoded(self):
+		self.uniqseq_xpath_encoded = np.vstack({tuple(row) for row in self.seq_xpath_encoded_2d})
+		
+
 	def make_seq_xpath_encoded_3d(self):
 		shape = self.shape_seq_xpath
 		self.seq_xpath_encoded_3d = np.zeros(shape=(shape[0], shape[1], len(SEQ_TAGCODE)), dtype=np.int32)
@@ -125,6 +138,9 @@ class XpathFinder():
 				self.seq_xpath_encoded_3d[i, j, code] = 1
 
 	# Getters
+	def get_soup(self):
+		return self.soup
+
 	def get_seq_xpath(self):
 		return self.seq_xpath
 
@@ -133,6 +149,9 @@ class XpathFinder():
 
 	def get_seq_xpath_encoded_2d(self):
 		return self.seq_xpath_encoded_2d
+
+	def get_uniqseq_xpath_encoded(self):
+		return self.uniqseq_xpath_encoded
 
 	def get_seq_xpath_encoded_3d(self):
 		return self.seq_xpath_encoded_3d

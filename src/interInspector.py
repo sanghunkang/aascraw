@@ -9,9 +9,27 @@ import numpy as np
 # Import package-wide constants
 from constGlobal import *
 
-def get_unqseq_xpath_encoded(seq_xpath_encoded):
-	unqseq_xpath_encoded = np.vstack({tuple(row) for row in seq_xpath_encoded})
-	return unqseq_xpath_encoded
+class InterInspector():
+	def __init__(self):
+		pass
+
+		self.seq_pageinfo = []
+	
+	def receive_pageinfo(self, pageinfo):
+
+		self.seq_pageinfo.append()
+
+	def calculate_shape_intersect(self):
+		self.shape_interesect
+
+
+	def get_intersect_xpath_encoded(self):
+		pass
+
+	def get_shape_intersect(self):
+		return self.shape_interesect
+
+
 
 def get_intersect_xpath_encoded(unqseq_xpath_encoded_0, unqseq_xpath_encoded_1):
 	nrows, ncols = unqseq_xpath_encoded_0.shape
