@@ -93,7 +93,20 @@ def get_seq_xpath_encoded_target(seq_seq_xpath_encoded):
 	index = seq_len.index(min(seq_len))
 
 	seq_xpath_encoded_target = seq_seq_xpath_encoded[index]
-	return seq_xpath_encoded_target
+	return seq_xpath_encoded_target, index
+
+def simpleshrink(seq_xpath_target, seq_seq_xpath_encoded):
+	seq_xpath_simpleshrink = []
+	for i, xpath_encoded in enumerate(seq_xpath_encoded_target):
+		is_repeating = True
+		for seq_xpath_encoded in seq_seq_xpath_encoded:
+			if xpath_encoded not in seq_xpath_encoded:
+				is_repeating == False
+				break
+		if is_repeating == True:
+			print(xpath_encoded)
+			seq_xpath_simpleshrink.append(i)
+	return seq_xpath_simpleshrink
 
 def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded_compared):
 	if len(seq_xpath_encoded_target) < len(seq_xpath_encoded_compared):
@@ -117,19 +130,7 @@ def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded_comp
 			backstep -= 1
 	return map_sxe0, map_sxe1
 
-def simpleshrink(seq_xpath_encoded, intersect_xpath_encoded):
-	# simpleseq_map = np.zeros(shape=(seq_xpath_encoded.shape[0], 2), dtype=np.int32)
-	# simpleseq_map.fill(-1)
 
-	simpleseq_map = []
-	for i, xpath_encoded in enumerate(seq_xpath_encoded):
-		for j, xpath_encoded_uniq in enumerate(intersect_xpath_encoded):
-			if np.array_equal(xpath_encoded, xpath_encoded_uniq):
-				simpleseq_map.append(i)
-				# seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
-				# index_mapped += 1
-	simpleseq_map = np.array(simpleseq_map, dtype=np.int32)
-	return simpleseq_map
 
 def get_filteredseq_xpath(seq_xpath, seq_map_xpath):
 	filteredseq_xpath = []
