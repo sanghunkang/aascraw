@@ -14,9 +14,14 @@ from constGlobal import *
 class InterInspector():
 	def __init__(self):
 		self.seq_pageinfo = []
+
+		self.intersect_xpath_encoded = []
 	
+		
+
 	def receive_pageinfo(self, pageinfo):
 		self.seq_pageinfo.append(pageinfo)
+		self.make_intersect_xpath_encoded()
 
 	def calculate_shape_intersect(self):
 		seq_pageinfo = self.get_seq_pageinfo()
@@ -41,14 +46,16 @@ class InterInspector():
 
 		return seq_for_intersect
 
-	def get_intersect_xpath_encoded(self):
-		nrows, ncols = self.get_shape_intersect()
+	def make_intersect_xpath_encoded(self):
+		self.calculate_shape_intersect()
 
+		nrows, ncols = self.get_shape_intersect()
 		seq_for_intersect = self._make_seq_for_intersect()
 
 		intersect_xpath_encoded = reduce(np.intersect1d, seq_for_intersect)
 		intersect_xpath_encoded = intersect_xpath_encoded.view(np.int32).reshape(-1, ncols)
-		return intersect_xpath_encoded
+		
+		self.intersect_xpath_encoded = intersect_xpath_encoded
 
 	def get_seq_pageinfo(self):
 		return self.seq_pageinfo
@@ -56,19 +63,23 @@ class InterInspector():
 	def get_shape_intersect(self):
 		return self.shape_intersect
 
+	def get_intersect_xpath_encoded(self):
+		# self.make_intersect_xpath_encoded()
+		return self.intersect_xpath_encoded
 
-def make_map(seq_xpath_encoded, intersect_xpath_encoded):
-	seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0],2), dtype=np.int32)
-	seq_map_xpath.fill(-1)
+
+# def make_map(seq_xpath_encoded, intersect_xpath_encoded):
+# 	seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0],2), dtype=np.int32)
+# 	seq_map_xpath.fill(-1)
 	
-	index_mapped = 0
-	for i, xpath_encoded in enumerate(seq_xpath_encoded):
-		for j, xpath_encoded_unq in enumerate(intersect_xpath_encoded):
-			if np.array_equal(xpath_encoded, xpath_encoded_unq):
-				seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
-				index_mapped += 1
-	seq_map_xpath = seq_map_xpath[~np.all(seq_map_xpath == -1, axis=1)]
-	return seq_map_xpath
+# 	index_mapped = 0
+# 	for i, xpath_encoded in enumerate(seq_xpath_encoded):
+# 		for j, xpath_encoded_unq in enumerate(intersect_xpath_encoded):
+# 			if np.array_equal(xpath_encoded, xpath_encoded_unq):
+# 				seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
+# 				index_mapped += 1
+# 	seq_map_xpath = seq_map_xpath[~np.all(seq_map_xpath == -1, axis=1)]
+# 	return seq_map_xpath
 
 # possilbly skip this stage
 def shrink1st_seq_xpath_encoded(seq_xpath_encoded, seq_map_xpath):
@@ -77,11 +88,18 @@ def shrink1st_seq_xpath_encoded(seq_xpath_encoded, seq_map_xpath):
 		shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
 	return shrunkseq_xpath_encoded
 
-def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_0, seq_xpath_encoded_1):
-	if len(seq_xpath_encoded_0) < len(seq_xpath_encoded_1):
-		sxe0, sxe1 = seq_xpath_encoded_0, seq_xpath_encoded_1
+def get_seq_xpath_encoded_target(seq_seq_xpath_encoded):
+	seq_len = [len(seq_xpath_encoded) for seq_xpath_encoded in seq_seq_xpath_encoded]
+	index = seq_len.index(min(seq_len))
+
+	seq_xpath_encoded_target = seq_seq_xpath_encoded[index]
+	return seq_xpath_encoded_target
+
+def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded_compared):
+	if len(seq_xpath_encoded_target) < len(seq_xpath_encoded_compared):
+		sxe0, sxe1 = seq_xpath_encoded_target, seq_xpath_encoded_compared
 	else:
-		sxe0, sxe1 = seq_xpath_encoded_1, seq_xpath_encoded_0
+		sxe0, sxe1 = seq_xpath_encoded_compared, seq_xpath_encoded_target
 
 	map_sxe0, map_sxe1 = [], []
 	i, fwdstep, backstep= 0, 0, 0
@@ -99,10 +117,21 @@ def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_0, seq_xpath_encoded_1):
 			backstep -= 1
 	return map_sxe0, map_sxe1
 
-def get_filteredseq_xpath(seq_xpath, seq_map_xpath):#, range_xpath):
-	# filteredseq_xpath = np.zeros(shape=(len(seq_map_xpath), range_xpath))
-	# for i, map_xpath in enumerate(seq_map_xpath):
-	# 	filteredseq_xpath[i] = seq_xpath[map_xpath]
+def simpleshrink(seq_xpath_encoded, intersect_xpath_encoded):
+	# simpleseq_map = np.zeros(shape=(seq_xpath_encoded.shape[0], 2), dtype=np.int32)
+	# simpleseq_map.fill(-1)
+
+	simpleseq_map = []
+	for i, xpath_encoded in enumerate(seq_xpath_encoded):
+		for j, xpath_encoded_uniq in enumerate(intersect_xpath_encoded):
+			if np.array_equal(xpath_encoded, xpath_encoded_uniq):
+				simpleseq_map.append(i)
+				# seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
+				# index_mapped += 1
+	simpleseq_map = np.array(simpleseq_map, dtype=np.int32)
+	return simpleseq_map
+
+def get_filteredseq_xpath(seq_xpath, seq_map_xpath):
 	filteredseq_xpath = []
 	for map_xpath in seq_map_xpath:
 		filteredseq_xpath.append(seq_xpath[map_xpath])

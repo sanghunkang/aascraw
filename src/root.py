@@ -14,7 +14,7 @@ import numpy as np
 # Import custom modules
 from driverController.driver import webdriverTailored
 from driverController.locator import get_attr_elem, locate_element, get_eigentext
-from interInspector import InterInspector, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
+from interInspector import InterInspector, get_seq_xpath_encoded_target, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
 from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
 
@@ -45,13 +45,9 @@ seq_xpath2 = xpathFinder2.get_seq_xpath()
 print(xpathFinder0.get_shape_seq_xpath())
 print(xpathFinder1.get_shape_seq_xpath())
 
-seq_xpath_encoded0 = xpathFinder0.get_seq_xpath_encoded_2d()
-seq_xpath_encoded1 = xpathFinder1.get_seq_xpath_encoded_2d()
-seq_xpath_encoded2 = xpathFinder2.get_seq_xpath_encoded_2d()
-
-uniqseq_xpath_encoded0 = xpathFinder0.get_uniqseq_xpath_encoded()
-uniqseq_xpath_encoded1 = xpathFinder1.get_uniqseq_xpath_encoded()
-uniqseq_xpath_encoded2 = xpathFinder2.get_uniqseq_xpath_encoded()
+seq_xpath_encoded0 = xpathFinder0.get_seq_xpath_encoded()
+seq_xpath_encoded1 = xpathFinder1.get_seq_xpath_encoded()
+seq_xpath_encoded2 = xpathFinder2.get_seq_xpath_encoded()
 
 #############################################################################
 
@@ -62,25 +58,37 @@ interInspector.receive_pageinfo(xpathFinder1)
 interInspector.receive_pageinfo(xpathFinder2)
 interInspector.receive_pageinfo(xpathFinder3)
 
-
-interInspector.calculate_shape_intersect()
 intersect_xpath_encoded = interInspector.get_intersect_xpath_encoded()
+
 print(intersect_xpath_encoded)
+
+# xpathFinder0.make_seq_map_xpath(intersect_xpath_encoded)
+# xpathFinder1.make_seq_map_xpath(intersect_xpath_encoded)
+# xpathFinder2.make_seq_map_xpath(intersect_xpath_encoded)
+
+# seq_map_xpath0 = xpathFinder0.get_seq_map_xpath()
+# seq_map_xpath1 = xpathFinder1.get_seq_map_xpath()
+# seq_map_xpath2 = xpathFinder2.get_seq_map_xpath()
+
+# shrunk1stseq_xpath_encoded0 = xpathFinder0.make_shrunkseq_xpath_encoded()
+# # shrunk1stseq_xpath_encoded0 = shrink1st_seq_xpath_encoded(seq_xpath_encoded0, seq_map_xpath0)
+# shrunk1stseq_xpath_encoded1 = shrink1st_seq_xpath_encoded(seq_xpath_encoded1, seq_map_xpath1)
+# shrunk1stseq_xpath_encoded2 = shrink1st_seq_xpath_encoded(seq_xpath_encoded2, seq_map_xpath2)
 print("#############################################################################")
+seq_seq_xpath_encoded = [seq_xpath_encoded0, seq_xpath_encoded1, seq_xpath_encoded2]
+seq_xpath_encoded_target = get_seq_xpath_encoded_target(seq_seq_xpath_encoded)
 
-# seq_map_xpath0 = xpathFinder0.make_seq_map_xpath(intersect_xpath_encoded)
+# seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded0, seq_xpath_encoded1)
+seq_map0, seq_map2 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded2)
+print(len(seq_map0), len(seq_map2))
+seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded1)
+print(len(seq_map0), len(seq_map1))
 
-seq_map_xpath0 = make_map(seq_xpath_encoded0, intersect_xpath_encoded)
-seq_map_xpath1 = make_map(seq_xpath_encoded1, intersect_xpath_encoded)
 
-
-shrunk1stseq_xpath_encoded0 = shrink1st_seq_xpath_encoded(seq_xpath_encoded0, seq_map_xpath0)
-shrunk1stseq_xpath_encoded1 = shrink1st_seq_xpath_encoded(seq_xpath_encoded1, seq_map_xpath1)
-
-seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded0, seq_xpath_encoded1)
-
+print("#############################################################################")
 filteredseq_xpath0 = get_filteredseq_xpath(seq_xpath0, seq_map0)
 filteredseq_xpath1 = get_filteredseq_xpath(seq_xpath1, seq_map1)
+filteredseq_xpath2 = get_filteredseq_xpath(seq_xpath2, seq_map2)
 
 print(len(filteredseq_xpath0))
 print(len(filteredseq_xpath1))
@@ -89,14 +97,14 @@ soup0 = xpathFinder0.get_soup()
 soup1 = xpathFinder1.get_soup()
 soup2 = xpathFinder2.get_soup()
 soup3 = xpathFinder3.get_soup()
-
+i = 0
 # for xpath0, xpath1 in zip(filteredseq_xpath0, filteredseq_xpath1):
-for i in range(1, len(filteredseq_xpath0)):
+for i, xpath0 in enumerate(filteredseq_xpath0):
 	print(i, "#############################################################################")
+	i += 1
 	xpath0 = seq_xpath0[seq_map0[i]]
-	xpath1 = seq_xpath1[seq_map1[i]]
 	print(xpath0)
-	print(xpath1)
+	# print(xpath1)
 	try:
 		elems_located0 = locate_element(soup0, xpath0, get_attr_elem)[-1]
 		eigentext0 = get_eigentext(elems_located0)
@@ -137,18 +145,18 @@ xpathFinder = XpathFinder(url)
 seq_xpath = xpathFinder.get_seq_xpath()
 
 seq_xpath_encoded_occurence = xpathFinder.get_seq_xpath_encoded_occurence()
-seq_xpath_encoded_2d = xpathFinder.get_seq_xpath_encoded_2d()
+seq_xpath_encoded = xpathFinder.get_seq_xpath_encoded()
 seq_xpath_encoded_3d = xpathFinder.get_seq_xpath_encoded_3d()
 
-# plt.imshow(seq_xpath_encoded_2d)
+# plt.imshow(seq_xpath_encoded)
 # plt.axes().set_aspect('auto', 'datalim')
 # plt.show()
 
-print(seq_xpath_encoded_2d.shape)
+print(seq_xpath_encoded.shape)
 print(seq_xpath_encoded_3d.shape)
 soup = xpathFinder.soup
 
-intraInspector = IntraInspector(seq_xpath_encoded_2d, seq_xpath_encoded_occurence)
+intraInspector = IntraInspector(seq_xpath_encoded, seq_xpath_encoded_occurence)
 seq_set_canddt = intraInspector.get_seq_set_canddt()
 
 for set_canddt in seq_set_canddt:

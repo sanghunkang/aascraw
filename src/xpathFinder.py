@@ -52,7 +52,7 @@ class XpathFinder():
 		self.soup = None
 		self.seq_xpath = []
 		self.shape_seq_xpath = ()
-		self.seq_xpath_encoded_2d = []
+		self.seq_xpath_encoded = []
 		self.uniqseq_xpath_encoded = []
 		self.seq_xpath_encoded_occurence = []
 		self.seq_map_xpath = []
@@ -64,9 +64,9 @@ class XpathFinder():
 		self.filter_seq_xpath()
 
 		self.make_shape_seq_xpath()
-		self.make_seq_xpath_encoded_2d()
+		self.make_seq_xpath_encoded()
 		self.make_uniqseq_xpath_encoded()
-		self.make_seq_xpath_encoded_3d()
+		self.make_seq_xpath_encoded_sparse()
 
 	def get_HTMLdoc(self, url):
 		headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
@@ -118,26 +118,27 @@ class XpathFinder():
 		seq_depth = [len(xpath.split("/")) for xpath in self.seq_xpath]
 		self.shape_seq_xpath = (len(self.seq_xpath), max(seq_depth)//2)
 
-	def make_seq_xpath_encoded_2d(self):
+	def make_seq_xpath_encoded(self):
 		shape = self.shape_seq_xpath
-		self.seq_xpath_encoded_2d = np.zeros(shape=shape, dtype=np.int32)
+		self.seq_xpath_encoded = np.zeros(shape=shape, dtype=np.int32)
 		self.seq_xpath_encoded_occurence = np.zeros(shape=shape, dtype=np.int32)
 		
 		for i, xpath in enumerate(self.seq_xpath):
-			self.seq_xpath_encoded_2d[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[0]
+			self.seq_xpath_encoded[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[0]
 			self.seq_xpath_encoded_occurence[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[1]
 
 	def make_uniqseq_xpath_encoded(self):
-		self.uniqseq_xpath_encoded = np.vstack({tuple(row) for row in self.seq_xpath_encoded_2d})
+		self.uniqseq_xpath_encoded = np.vstack({tuple(row) for row in self.seq_xpath_encoded})
 		
 
-	def make_seq_xpath_encoded_3d(self):
+	def make_seq_xpath_encoded_sparse(self):
 		shape = self.shape_seq_xpath
-		self.seq_xpath_encoded_3d = np.zeros(shape=(shape[0], shape[1], len(SEQ_TAGCODE)), dtype=np.int32)
-		for i, xpath_encoded in enumerate(self.get_seq_xpath_encoded_2d()):
+		self.seq_xpath_encoded_sparse = np.zeros(shape=(shape[0], shape[1], len(SEQ_TAGCODE)), dtype=np.int32)
+		for i, xpath_encoded in enumerate(self.get_seq_xpath_encoded()):
 			for j, code in enumerate(xpath_encoded):
-				self.seq_xpath_encoded_3d[i, j, code] = 1
+				self.seq_xpath_encoded_sparse[i, j, code] = 1
 
+	# Inter
 	def make_seq_map_xpath(self, intersect_xpath_encoded):
 		seq_xpath_encoded = self.get_seq_xpath_encoded()
 		
@@ -151,7 +152,20 @@ class XpathFinder():
 					seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
 					index_mapped += 1
 		seq_map_xpath = seq_map_xpath[~np.all(seq_map_xpath == -1, axis=1)]
+		
 		self.seq_map_xpath = seq_map_xpath
+
+	# Inter
+	def make_shrunkseq_xpath_encoded(self):
+		seq_map_xpath = self.get_seq_map_xpath()
+		seq_xpath_encoded = self.get_seq_xpath_encoded()
+
+		shrunkseq_xpath_encoded = np.zeros(shape=(seq_map_xpath.shape[0], seq_xpath_encoded.shape[1]), dtype=np.int32)
+		for map_xpath in seq_map_xpath:
+			shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
+
+		self.shrunkseq_xpath_encoded = shrunkseq_xpath_encoded
+		# return shrunkseq_xpath_encoded
 
 	# Getters
 	def get_soup(self):
@@ -163,14 +177,14 @@ class XpathFinder():
 	def get_seq_xpath_encoded_occurence(self):
 		return self.seq_xpath_encoded_occurence
 
-	def get_seq_xpath_encoded_2d(self):
-		return self.seq_xpath_encoded_2d
+	def get_seq_xpath_encoded(self):
+		return self.seq_xpath_encoded
 
 	def get_uniqseq_xpath_encoded(self):
 		return self.uniqseq_xpath_encoded
 
-	def get_seq_xpath_encoded_3d(self):
-		return self.seq_xpath_encoded_3d
+	def get_seq_xpath_encoded_sparse(self):
+		return self.seq_xpath_encoded_sparse
 	
 	def get_shape_seq_xpath(self):
 		return self.shape_seq_xpath
@@ -178,6 +192,8 @@ class XpathFinder():
 	def get_seq_map_xpath(self):
 		return self.seq_map_xpath
 
+	def get_shrunkseq_xpath_encoded(self):
+		return self.shrunkseq_xpath_encoded
 
 
 
