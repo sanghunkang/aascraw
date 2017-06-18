@@ -14,134 +14,69 @@ import numpy as np
 # Import custom modules
 from driverController.driver import webdriverTailored
 from driverController.locator import get_attr_elem, locate_element, get_eigentext, get_eigentext_bw
-from interInspector import InterInspector, simpleshrink, get_seq_xpath_target, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
+from interInspector import InterInspector
 from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
 
 # Import package-wide constants
 from constGlobal import *
 
-#############################################################################
 print("INITIATED!")
+#############################################################################
+# Inter
+
+#############################################################################
+# Generation
+
 # url0 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or30-Hong_Kong_Skyline-Hong_Kong.html"
 # url1 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or40-Hong_Kong_Skyline-Hong_Kong.html"
 # url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
 # url = "http://v.media.daum.net/v/20170609204506833?rcmd=r"
-url0 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=155256"
-url1 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
-url2 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=125473"
-url3 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=137326"
 
-# sampl1
+# Movies
+# url0 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=155256"
+# url1 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
+# url2 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=125473"
+# url3 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=137326"
+
+# News
+url0 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=008&aid=0003889934&date=20170618&type=1&rankingSeq=1&rankingSectionId=100"
+url1 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=015&aid=0003783581&date=20170618&type=1&rankingSeq=1&rankingSectionId=105"
+url2 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=001&aid=0009345375&date=20170618&type=1&rankingSeq=1&rankingSectionId=104"
+url3 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=001&aid=0009345375&date=20170618&type=1&rankingSeq=1&rankingSectionId=102"
+
 xpathFinder0 = XpathFinder(url0)
 xpathFinder1 = XpathFinder(url1)
 xpathFinder2 = XpathFinder(url2)
-xpathFinder3 = XpathFinder(url3)
 
-
-seq_xpath0 = xpathFinder0.get_seq_xpath()
-seq_xpath1 = xpathFinder1.get_seq_xpath()
-seq_xpath2 = xpathFinder2.get_seq_xpath()
-
-for xpath in seq_xpath0:
-	print(xpath)
-
-print(xpathFinder0.get_shape_seq_xpath())
-print(xpathFinder1.get_shape_seq_xpath())
-
-seq_xpath_encoded0 = xpathFinder0.get_seq_xpath_encoded()
-seq_xpath_encoded1 = xpathFinder1.get_seq_xpath_encoded()
-seq_xpath_encoded2 = xpathFinder2.get_seq_xpath_encoded()
-
-#############################################################################
-
-interInspector = InterInspector()
 # Feed Samples
+interInspector = InterInspector()
 interInspector.receive_pageinfo(xpathFinder0)
 interInspector.receive_pageinfo(xpathFinder1)
 interInspector.receive_pageinfo(xpathFinder2)
-interInspector.receive_pageinfo(xpathFinder3)
+# interInspector.receive_pageinfo(xpathFinder3)
 
-intersect_xpath_encoded = interInspector.get_intersect_xpath_encoded()
+interInspector.make_seq_xpath_canddt_inter()
+seq_xpath_canddt_inter = interInspector.get_seq_xpath_canddt_inter()
 
-# print(intersect_xpath_encoded)
+#############################################################################
+# Testing
+xpathFinder3 = XpathFinder(url3)
 
-print("#############################################################################")
-seq_seq_xpath = interInspector.get_seq_seq_xpath()
-
-seq_xpath_target, index = get_seq_xpath_target(seq_seq_xpath)
-seq_xpath_simpleshrink = simpleshrink(seq_xpath_target, seq_seq_xpath)
-print(len(seq_xpath_simpleshrink))
-
-# seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded0, seq_xpath_encoded1)
-# seq_map0, seq_map2 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded2)
-# print(len(seq_map0), len(seq_map2))
-# seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded1)
-# print(len(seq_map0), len(seq_map1))
-
-
-# print("#############################################################################")
-# filteredseq_xpath0 = get_filteredseq_xpath(seq_xpath0, seq_map0)
-# filteredseq_xpath1 = get_filteredseq_xpath(seq_xpath1, seq_map1)
-# filteredseq_xpath2 = get_filteredseq_xpath(seq_xpath2, seq_map2)
-
-# print(len(filteredseq_xpath0))
-# print(len(filteredseq_xpath1))
-
-soup0 = xpathFinder0.get_soup()
-soup1 = xpathFinder1.get_soup()
 soup2 = xpathFinder2.get_soup()
 soup3 = xpathFinder3.get_soup()
-i = 0
-# for xpath0, xpath1 in zip(filteredseq_xpath0, filteredseq_xpath1):
-# for i, xpath0 in enumerate(filteredseq_xpath0):
-seq_xpath_canddt_inter = []
-for i, xpath_simpleshrink in enumerate(seq_xpath_simpleshrink):
-
-	
-	xpath0 = xpath_simpleshrink
-	# xpath0 = seq_xpath0[seq_map0[i]]
-	# xpath0 = xpath_simpleshrink
-	# print(xpath1)
+for xpath in seq_xpath_canddt_inter:
 	try:
-		elems_located0 = locate_element(soup0, xpath0, get_attr_elem)[-1]
-		# print(elems_located0)
-		# eigentext0 = elems_located0.text()
-		eigentext0 = get_eigentext(elems_located0)
-		# eigentext0 = get_eigentext_bw(elems_located0)
-		# print(eigentext0)
+		print(xpath)
+		elems_located_test2 = locate_element(soup2, xpath, get_attr_elem)[-1]
+		eigentext_test2 = get_eigentext(elems_located_test2)
+		print(eigentext_test2)
 
-		# print("_______________________________________________________________")
-		elems_located1 = locate_element(soup1, xpath0, get_attr_elem)[-1]
-		# print(elems_located1)
-		# eigentext1 = elems_located1.get_text()
-		eigentext1 = get_eigentext(elems_located1)
-		# eigentext1 = get_eigentext_bw(elems_located1)
-		# print(eigentext1)
-
-		if eigentext0 != eigentext1:# or eigentext1 != eigentext2:
-			print(i, "#############################################################################")
-			print(xpath0)
-			print(eigentext0)
-			print("_______________________________________________________________")
-			print(eigentext1)
-			print("_______________________________________________________________")
-			seq_xpath_canddt_inter.append(xpath0)
-
+		elems_located_test3 = locate_element(soup3, xpath, get_attr_elem)[-1]
+		eigentext_test3 = get_eigentext(elems_located_test3)
+		print(eigentext_test3)
 	except IndexError:
 		print(IndexError)
-	except TypeError:
-		print(TypeError)
-	i += 1
-
-for xpath in seq_xpath_canddt_inter:
-	print(xpath)
-	elems_located_test1 = locate_element(soup1, xpath, get_attr_elem)[-1]
-	eigentext_test1 = get_eigentext(elems_located_test1)
-	print(eigentext_test1)
-	elems_located_test2 = locate_element(soup2, xpath, get_attr_elem)[-1]
-	eigentext_test2 = get_eigentext(elems_located_test2)
-	print(eigentext_test2)
 	print("#############################################################################")
 
 #############################################################################

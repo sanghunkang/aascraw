@@ -68,9 +68,6 @@ class XpathFinder():
 		self.make_uniqseq_xpath_encoded()
 		self.make_seq_xpath_encoded_sparse()
 
-	def refine_doc(self, doc):
-		pass
-
 	def get_HTMLdoc(self, url):
 		headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
 		
@@ -81,12 +78,14 @@ class XpathFinder():
 		doc = req.read().decode(charset)
 
 		soup = BeautifulSoup(doc, "html.parser")
-		# [s.decompose() for s in soup('span')]
-		# [s.decompose() for s in soup('p')]
+		[s.decompose() for s in soup('br')]
+		[s.decompose() for s in soup('span')]
+		[s.decompose() for s in soup('p')]
 		# [s.decompose() for s in soup('em')]
 		# [s.decompose() for s in soup('strong')]
 		[s.extract() for s in soup('script')]
 		[s.extract() for s in soup('style')]
+		print(soup)
 		self.soup = soup
 		# return soup
 
@@ -112,17 +111,12 @@ class XpathFinder():
 
 	def filter_seq_xpath(self):
 		# Set operation doesn't preserve the order
-		seq_xpath_filtered_once = []
+		seq_xpath_filtered = []
 		for xpath in self.seq_xpath:
-			if xpath not in seq_xpath_filtered_once:
-				seq_xpath_filtered_once.append(xpath)
+			if xpath not in seq_xpath_filtered:
+				seq_xpath_filtered.append(xpath)
 
-		seq_xpath_filtered_twice = []
-		for xpath in seq_xpath_filtered_once:
-			if re.search(r"script|style", xpath) == None:
-				seq_xpath_filtered_twice.append(xpath)
-
-		self.seq_xpath = seq_xpath_filtered_twice
+		self.seq_xpath = seq_xpath_filtered
 
 	def make_shape_seq_xpath(self):
 		seq_depth = [len(xpath.split("/")) for xpath in self.seq_xpath]
@@ -138,7 +132,8 @@ class XpathFinder():
 			self.seq_xpath_encoded_occurence[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[1]
 
 	def make_uniqseq_xpath_encoded(self):
-		self.uniqseq_xpath_encoded = np.vstack({tuple(row) for row in self.seq_xpath_encoded})
+		seq_xpath_encoded = self.get_seq_xpath_encoded()
+		self.uniqseq_xpath_encoded = np.vstack({tuple(row) for row in seq_xpath_encoded})
 		
 
 	def make_seq_xpath_encoded_sparse(self):

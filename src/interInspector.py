@@ -8,6 +8,8 @@ from functools import reduce
 import numpy as np
 
 # Import custom modules
+from driverController.locator import get_attr_elem, locate_element, get_eigentext
+
 # Import package-wide constants
 from constGlobal import *
 
@@ -22,7 +24,7 @@ class InterInspector():
 	def receive_pageinfo(self, pageinfo):
 		self.seq_pageinfo.append(pageinfo)
 		
-		self.make_intersect_xpath_encoded()
+		# self.make_intersect_xpath_encoded()
 		self.make_seq_seq_xpath()
 
 	def calculate_shape_intersect(self):
@@ -64,15 +66,21 @@ class InterInspector():
 		seq_seq_xpath = [pageinfo.get_seq_xpath() for pageinfo in seq_pageinfo]
 		self.seq_seq_xpath = seq_seq_xpath
 
-	def get_seq_xpath_target(self, seq_seq_xpath):
+	def make_seq_xpath_target(self):
+		seq_seq_xpath = self.get_seq_seq_xpath()
+
 		seq_len = [len(seq_xpath) for seq_xpath in seq_seq_xpath]
 		index = seq_len.index(min(seq_len))
 
 		seq_xpath_target = seq_seq_xpath[index]
-		return seq_xpath_target, index
+		self.seq_xpath_target = seq_xpath_target
 
-	def simpleshrink(self, seq_xpath_target, seq_seq_xpath):
-		seq_xpath_simpleshrink = []
+	def make_intersect_xpath(self):
+		# Doesn't seem perfect
+		seq_xpath_target = self.get_seq_xpath_target()
+		seq_seq_xpath = self.get_seq_seq_xpath()
+
+		intersect_xpath = []
 		for i, xpath in enumerate(seq_xpath_target):
 			is_repeating = True
 			for seq_xpath in seq_seq_xpath:
@@ -80,9 +88,46 @@ class InterInspector():
 					is_repeating == False
 					break
 			if is_repeating == True:
-				print(xpath)
-				seq_xpath_simpleshrink.append(xpath)
-		return seq_xpath_simpleshrink
+				# print(xpath)
+				intersect_xpath.append(xpath)
+		
+		self.intersect_xpath = intersect_xpath
+
+	def make_seq_xpath_canddt_inter(self):
+		self.make_seq_xpath_target()
+		self.make_intersect_xpath()
+
+		seq_pageinfo = self.get_seq_pageinfo()
+		intersect_xpath = self.get_intersect_xpath()
+
+		seq_xpath_canddt_inter = []
+		for i, xpath in enumerate(intersect_xpath):
+			try:
+				seq_elem_located = [locate_element(pageinfo.get_soup(), xpath, get_attr_elem)[-1] for pageinfo in seq_pageinfo]
+				seq_eigentext = [get_eigentext(elem_located) for elem_located in seq_elem_located]
+				
+				eigentext0 = seq_eigentext[0]
+				eigentext1 = seq_eigentext[1]
+				eigentext2 = seq_eigentext[2]
+
+				print(i, "#############################################################################")
+				if eigentext0 != eigentext1 or eigentext1 != eigentext2:
+					print(xpath)
+					print(eigentext0)
+					print("_______________________________________________________________")
+					print(eigentext1)
+					print("_______________________________________________________________")
+					print(eigentext2)
+					print("_______________________________________________________________")
+					seq_xpath_canddt_inter.append(xpath)
+
+			except IndexError:
+				print(IndexError)
+			except TypeError:
+				print(TypeError)
+			i += 1
+		self.seq_xpath_canddt_inter = seq_xpath_canddt_inter
+		# return seq_xpath_canddt_inter
 
 	# Getters ... well defined
 	def get_seq_pageinfo(self):
@@ -97,6 +142,16 @@ class InterInspector():
 
 	def get_seq_seq_xpath(self):
 		return self.seq_seq_xpath
+
+	def get_seq_xpath_target(self):
+		return self.seq_xpath_target
+
+	def get_intersect_xpath(self):
+		return self.intersect_xpath
+
+	def get_seq_xpath_canddt_inter(self):
+		return self.seq_xpath_canddt_inter
+
 # def make_map(seq_xpath_encoded, intersect_xpath_encoded):
 # 	seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0],2), dtype=np.int32)
 # 	seq_map_xpath.fill(-1)
@@ -111,32 +166,34 @@ class InterInspector():
 # 	return seq_map_xpath
 
 # possilbly skip this stage
-def shrink1st_seq_xpath_encoded(seq_xpath_encoded, seq_map_xpath):
-	shrunkseq_xpath_encoded = np.zeros(shape=(seq_map_xpath.shape[0], seq_xpath_encoded.shape[1]), dtype=np.int32)
-	for map_xpath in seq_map_xpath:
-		shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
-	return shrunkseq_xpath_encoded
+"""
+# def shrink1st_seq_xpath_encoded(seq_xpath_encoded, seq_map_xpath):
+# 	shrunkseq_xpath_encoded = np.zeros(shape=(seq_map_xpath.shape[0], seq_xpath_encoded.shape[1]), dtype=np.int32)
+# 	for map_xpath in seq_map_xpath:
+# 		shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
+# 	return shrunkseq_xpath_encoded
 
-def get_seq_xpath_target(seq_seq_xpath):
-	seq_len = [len(seq_xpath) for seq_xpath in seq_seq_xpath]
-	index = seq_len.index(min(seq_len))
+# def get_seq_xpath_target(seq_seq_xpath):
+# 	seq_len = [len(seq_xpath) for seq_xpath in seq_seq_xpath]
+# 	index = seq_len.index(min(seq_len))
 
-	seq_xpath_target = seq_seq_xpath[index]
-	return seq_xpath_target, index
+# 	seq_xpath_target = seq_seq_xpath[index]
+# 	return seq_xpath_target, index
 
-def simpleshrink(seq_xpath_target, seq_seq_xpath):
-	seq_xpath_simpleshrink = []
-	for i, xpath in enumerate(seq_xpath_target):
-		is_repeating = True
-		for seq_xpath in seq_seq_xpath:
-			if xpath not in seq_xpath:
-				is_repeating == False
-				break
-		if is_repeating == True:
-			print(xpath)
-			seq_xpath_simpleshrink.append(xpath)
-	return seq_xpath_simpleshrink
-
+# def simpleshrink(seq_xpath_target, seq_seq_xpath):
+# 	# Doesn't seem perfect
+# 	seq_xpath_simpleshrink = []
+# 	for i, xpath in enumerate(seq_xpath_target):
+# 		is_repeating = True
+# 		for seq_xpath in seq_seq_xpath:
+# 			if xpath not in seq_xpath:
+# 				is_repeating == False
+# 				break
+# 		if is_repeating == True:
+# 			print(xpath)
+# 			seq_xpath_simpleshrink.append(xpath)
+# 	return seq_xpath_simpleshrink
+"""
 def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded_compared):
 	if len(seq_xpath_encoded_target) < len(seq_xpath_encoded_compared):
 		sxe0, sxe1 = seq_xpath_encoded_target, seq_xpath_encoded_compared
@@ -161,8 +218,8 @@ def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded_comp
 
 
 
-def get_filteredseq_xpath(seq_xpath, seq_map_xpath):
-	filteredseq_xpath = []
-	for map_xpath in seq_map_xpath:
-		filteredseq_xpath.append(seq_xpath[map_xpath])
-	return filteredseq_xpath
+# def get_filteredseq_xpath(seq_xpath, seq_map_xpath):
+# 	filteredseq_xpath = []
+# 	for map_xpath in seq_map_xpath:
+# 		filteredseq_xpath.append(seq_xpath[map_xpath])
+# 	return filteredseq_xpath
