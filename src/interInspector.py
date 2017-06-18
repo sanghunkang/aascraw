@@ -21,7 +21,9 @@ class InterInspector():
 
 	def receive_pageinfo(self, pageinfo):
 		self.seq_pageinfo.append(pageinfo)
+		
 		self.make_intersect_xpath_encoded()
+		self.make_seq_seq_xpath()
 
 	def calculate_shape_intersect(self):
 		seq_pageinfo = self.get_seq_pageinfo()
@@ -57,6 +59,32 @@ class InterInspector():
 		
 		self.intersect_xpath_encoded = intersect_xpath_encoded
 
+	def make_seq_seq_xpath(self):
+		seq_pageinfo = self.get_seq_pageinfo()
+		seq_seq_xpath = [pageinfo.get_seq_xpath() for pageinfo in seq_pageinfo]
+		self.seq_seq_xpath = seq_seq_xpath
+
+	def get_seq_xpath_target(self, seq_seq_xpath):
+		seq_len = [len(seq_xpath) for seq_xpath in seq_seq_xpath]
+		index = seq_len.index(min(seq_len))
+
+		seq_xpath_target = seq_seq_xpath[index]
+		return seq_xpath_target, index
+
+	def simpleshrink(self, seq_xpath_target, seq_seq_xpath):
+		seq_xpath_simpleshrink = []
+		for i, xpath in enumerate(seq_xpath_target):
+			is_repeating = True
+			for seq_xpath in seq_seq_xpath:
+				if xpath not in seq_xpath:
+					is_repeating == False
+					break
+			if is_repeating == True:
+				print(xpath)
+				seq_xpath_simpleshrink.append(xpath)
+		return seq_xpath_simpleshrink
+
+	# Getters ... well defined
 	def get_seq_pageinfo(self):
 		return self.seq_pageinfo
 
@@ -67,7 +95,8 @@ class InterInspector():
 		# self.make_intersect_xpath_encoded()
 		return self.intersect_xpath_encoded
 
-
+	def get_seq_seq_xpath(self):
+		return self.seq_seq_xpath
 # def make_map(seq_xpath_encoded, intersect_xpath_encoded):
 # 	seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0],2), dtype=np.int32)
 # 	seq_map_xpath.fill(-1)
@@ -88,24 +117,24 @@ def shrink1st_seq_xpath_encoded(seq_xpath_encoded, seq_map_xpath):
 		shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
 	return shrunkseq_xpath_encoded
 
-def get_seq_xpath_encoded_target(seq_seq_xpath_encoded):
-	seq_len = [len(seq_xpath_encoded) for seq_xpath_encoded in seq_seq_xpath_encoded]
+def get_seq_xpath_target(seq_seq_xpath):
+	seq_len = [len(seq_xpath) for seq_xpath in seq_seq_xpath]
 	index = seq_len.index(min(seq_len))
 
-	seq_xpath_encoded_target = seq_seq_xpath_encoded[index]
-	return seq_xpath_encoded_target, index
+	seq_xpath_target = seq_seq_xpath[index]
+	return seq_xpath_target, index
 
-def simpleshrink(seq_xpath_target, seq_seq_xpath_encoded):
+def simpleshrink(seq_xpath_target, seq_seq_xpath):
 	seq_xpath_simpleshrink = []
-	for i, xpath_encoded in enumerate(seq_xpath_encoded_target):
+	for i, xpath in enumerate(seq_xpath_target):
 		is_repeating = True
-		for seq_xpath_encoded in seq_seq_xpath_encoded:
-			if xpath_encoded not in seq_xpath_encoded:
+		for seq_xpath in seq_seq_xpath:
+			if xpath not in seq_xpath:
 				is_repeating == False
 				break
 		if is_repeating == True:
-			print(xpath_encoded)
-			seq_xpath_simpleshrink.append(i)
+			print(xpath)
+			seq_xpath_simpleshrink.append(xpath)
 	return seq_xpath_simpleshrink
 
 def shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded_compared):

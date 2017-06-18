@@ -68,6 +68,9 @@ class XpathFinder():
 		self.make_uniqseq_xpath_encoded()
 		self.make_seq_xpath_encoded_sparse()
 
+	def refine_doc(self, doc):
+		pass
+
 	def get_HTMLdoc(self, url):
 		headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
 		
@@ -77,7 +80,14 @@ class XpathFinder():
 		charset = req.info().get_content_charset()
 		doc = req.read().decode(charset)
 
-		self.soup = BeautifulSoup(doc, "html.parser")
+		soup = BeautifulSoup(doc, "html.parser")
+		# [s.decompose() for s in soup('span')]
+		# [s.decompose() for s in soup('p')]
+		# [s.decompose() for s in soup('em')]
+		# [s.decompose() for s in soup('strong')]
+		[s.extract() for s in soup('script')]
+		[s.extract() for s in soup('style')]
+		self.soup = soup
 		# return soup
 
 	def run_make_seq_xpath(self):

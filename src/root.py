@@ -13,8 +13,8 @@ import numpy as np
 
 # Import custom modules
 from driverController.driver import webdriverTailored
-from driverController.locator import get_attr_elem, locate_element, get_eigentext
-from interInspector import InterInspector, simpleshrink, get_seq_xpath_encoded_target, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
+from driverController.locator import get_attr_elem, locate_element, get_eigentext, get_eigentext_bw
+from interInspector import InterInspector, simpleshrink, get_seq_xpath_target, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
 from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
 
@@ -38,9 +38,13 @@ xpathFinder1 = XpathFinder(url1)
 xpathFinder2 = XpathFinder(url2)
 xpathFinder3 = XpathFinder(url3)
 
+
 seq_xpath0 = xpathFinder0.get_seq_xpath()
 seq_xpath1 = xpathFinder1.get_seq_xpath()
 seq_xpath2 = xpathFinder2.get_seq_xpath()
+
+for xpath in seq_xpath0:
+	print(xpath)
 
 print(xpathFinder0.get_shape_seq_xpath())
 print(xpathFinder1.get_shape_seq_xpath())
@@ -60,27 +64,15 @@ interInspector.receive_pageinfo(xpathFinder3)
 
 intersect_xpath_encoded = interInspector.get_intersect_xpath_encoded()
 
-print(intersect_xpath_encoded)
+# print(intersect_xpath_encoded)
 
-# xpathFinder0.make_seq_map_xpath(intersect_xpath_encoded)
-# xpathFinder1.make_seq_map_xpath(intersect_xpath_encoded)
-# xpathFinder2.make_seq_map_xpath(intersect_xpath_encoded)
-
-# seq_map_xpath0 = xpathFinder0.get_seq_map_xpath()
-# seq_map_xpath1 = xpathFinder1.get_seq_map_xpath()
-# seq_map_xpath2 = xpathFinder2.get_seq_map_xpath()
-
-# shrunk1stseq_xpath_encoded0 = xpathFinder0.make_shrunkseq_xpath_encoded()
-# # shrunk1stseq_xpath_encoded0 = shrink1st_seq_xpath_encoded(seq_xpath_encoded0, seq_map_xpath0)
-# shrunk1stseq_xpath_encoded1 = shrink1st_seq_xpath_encoded(seq_xpath_encoded1, seq_map_xpath1)
-# shrunk1stseq_xpath_encoded2 = shrink1st_seq_xpath_encoded(seq_xpath_encoded2, seq_map_xpath2)
 print("#############################################################################")
-seq_seq_xpath = [seq_xpath0, seq_xpath1, seq_xpath2]
-seq_seq_xpath_encoded = [seq_xpath_encoded0, seq_xpath_encoded1, seq_xpath_encoded2]
+seq_seq_xpath = interInspector.get_seq_seq_xpath()
 
-seq_xpath_encoded_target, index = get_seq_xpath_encoded_target(seq_seq_xpath_encoded)
-seq_xpath_simpleshrink = simpleshrink(seq_xpath_encoded_target, seq_seq_xpath_encoded)
+seq_xpath_target, index = get_seq_xpath_target(seq_seq_xpath)
+seq_xpath_simpleshrink = simpleshrink(seq_xpath_target, seq_seq_xpath)
 print(len(seq_xpath_simpleshrink))
+
 # seq_map0, seq_map1 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded0, seq_xpath_encoded1)
 # seq_map0, seq_map2 = shrink2nd_seq_xpath_encoded(seq_xpath_encoded_target, seq_xpath_encoded2)
 # print(len(seq_map0), len(seq_map2))
@@ -103,44 +95,54 @@ soup3 = xpathFinder3.get_soup()
 i = 0
 # for xpath0, xpath1 in zip(filteredseq_xpath0, filteredseq_xpath1):
 # for i, xpath0 in enumerate(filteredseq_xpath0):
+seq_xpath_canddt_inter = []
 for i, xpath_simpleshrink in enumerate(seq_xpath_simpleshrink):
 
-	print(i, "#############################################################################")
-	xpath0 = seq_seq_xpath[index][xpath_simpleshrink]
+	
+	xpath0 = xpath_simpleshrink
 	# xpath0 = seq_xpath0[seq_map0[i]]
 	# xpath0 = xpath_simpleshrink
-	print(xpath0)
 	# print(xpath1)
 	try:
 		elems_located0 = locate_element(soup0, xpath0, get_attr_elem)[-1]
+		# print(elems_located0)
+		# eigentext0 = elems_located0.text()
 		eigentext0 = get_eigentext(elems_located0)
-		print(eigentext0)
+		# eigentext0 = get_eigentext_bw(elems_located0)
+		# print(eigentext0)
 
-		print("_______________________________________________________________")
+		# print("_______________________________________________________________")
 		elems_located1 = locate_element(soup1, xpath0, get_attr_elem)[-1]
+		# print(elems_located1)
+		# eigentext1 = elems_located1.get_text()
 		eigentext1 = get_eigentext(elems_located1)
-		print(eigentext1)
+		# eigentext1 = get_eigentext_bw(elems_located1)
+		# print(eigentext1)
 
-		print("_______________________________________________________________")
-		elems_located2 = locate_element(soup2, xpath0, get_attr_elem)[-1]
-		eigentext2 = get_eigentext(elems_located2)
-		print(eigentext2)
-		
-		print("_______________________________________________________________")
-		elems_located3 = locate_element(soup3, xpath0, get_attr_elem)[-1]
-		eigentext3 = get_eigentext(elems_located3)
-		print(eigentext3)
+		if eigentext0 != eigentext1:# or eigentext1 != eigentext2:
+			print(i, "#############################################################################")
+			print(xpath0)
+			print(eigentext0)
+			print("_______________________________________________________________")
+			print(eigentext1)
+			print("_______________________________________________________________")
+			seq_xpath_canddt_inter.append(xpath0)
 
 	except IndexError:
 		print(IndexError)
 	except TypeError:
 		print(TypeError)
 	i += 1
-# soup2 = xpathFinder2.get_soup()
-# xpath_test = "html/0/body/0/div/0/div/3/div/1/div/0/div/0/div/1/h3/0/a/0/"
-# elems_located_test = locate_element(soup2, xpath_test, get_attr_elem)[-1]
-# eigentext_test = get_eigentext(elems_located_test)
-# print(eigentext_test)
+
+for xpath in seq_xpath_canddt_inter:
+	print(xpath)
+	elems_located_test1 = locate_element(soup1, xpath, get_attr_elem)[-1]
+	eigentext_test1 = get_eigentext(elems_located_test1)
+	print(eigentext_test1)
+	elems_located_test2 = locate_element(soup2, xpath, get_attr_elem)[-1]
+	eigentext_test2 = get_eigentext(elems_located_test2)
+	print(eigentext_test2)
+	print("#############################################################################")
 
 #############################################################################
 # Intra

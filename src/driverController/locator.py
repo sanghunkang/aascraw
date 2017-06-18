@@ -52,3 +52,13 @@ def get_eigentext(elem):
 	except AttributeError:
 		str_stripped = "FAILED"
 	return str_stripped
+
+def get_eigentext_bw(elem):
+	try:
+		elem_str = str(elem)
+		pattern = re.compile(r"<.*?>(.*?)<.*?>$", re.DOTALL)
+		str_match = pattern.match(elem_str).group(0)	
+		str_stripped = re.sub(r"<.*?>", "", str_match, re.DOTALL)
+	except AttributeError:
+		str_stripped = "FAILED"
+	return str_stripped
