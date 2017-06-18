@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Import built-in packages
+from functools import reduce
+
 # Import external packages
 import numpy as np
 
@@ -11,36 +13,49 @@ from constGlobal import *
 
 class InterInspector():
 	def __init__(self):
-		pass
-
 		self.seq_pageinfo = []
 	
 	def receive_pageinfo(self, pageinfo):
-
-		self.seq_pageinfo.append()
+		self.seq_pageinfo.append(pageinfo)
 
 	def calculate_shape_intersect(self):
-		self.shape_interesect
+		seq_pageinfo = self.get_seq_pageinfo()
 
+		nrows = min([pageinfo.get_uniqseq_xpath_encoded().shape[0] for pageinfo in seq_pageinfo])
+		ncols = min([pageinfo.get_uniqseq_xpath_encoded().shape[1] for pageinfo in seq_pageinfo])
+
+		self.shape_intersect = (nrows, ncols)
+
+	def _make_seq_for_intersect(self):
+		seq_pageinfo = self.get_seq_pageinfo()
+		nrows, ncols = self.get_shape_intersect()
+
+		dtype = {
+			'names':['f{}'.format(i) for i in range(ncols)], 
+			'formats':ncols * [np.int32]
+		}
+		seq_for_intersect = []
+		for pageinfo in seq_pageinfo:
+			for_intersect = pageinfo.get_uniqseq_xpath_encoded().view(dtype)
+			seq_for_intersect.append(for_intersect)
+
+		return seq_for_intersect
 
 	def get_intersect_xpath_encoded(self):
-		pass
+		nrows, ncols = self.get_shape_intersect()
+
+		seq_for_intersect = self._make_seq_for_intersect()
+
+		intersect_xpath_encoded = reduce(np.intersect1d, seq_for_intersect)
+		intersect_xpath_encoded = intersect_xpath_encoded.view(np.int32).reshape(-1, ncols)
+		return intersect_xpath_encoded
+
+	def get_seq_pageinfo(self):
+		return self.seq_pageinfo
 
 	def get_shape_intersect(self):
-		return self.shape_interesect
+		return self.shape_intersect
 
-
-
-def get_intersect_xpath_encoded(unqseq_xpath_encoded_0, unqseq_xpath_encoded_1):
-	nrows, ncols = unqseq_xpath_encoded_0.shape
-	dtype={
-		'names':['f{}'.format(i) for i in range(ncols)], 
-		'formats':ncols * [unqseq_xpath_encoded_0.dtype]
-	}
-
-	intersect_xpath_encoded = np.intersect1d(unqseq_xpath_encoded_0.view(dtype), unqseq_xpath_encoded_1.view(dtype))
-	intersect_xpath_encoded = intersect_xpath_encoded.view(unqseq_xpath_encoded_1.dtype).reshape(-1, ncols)
-	return intersect_xpath_encoded
 
 def make_map(seq_xpath_encoded, intersect_xpath_encoded):
 	seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0],2), dtype=np.int32)

@@ -14,7 +14,7 @@ import numpy as np
 # Import custom modules
 from driverController.driver import webdriverTailored
 from driverController.locator import get_attr_elem, locate_element, get_eigentext
-from interInspector import InterInspector, get_intersect_xpath_encoded, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
+from interInspector import InterInspector, make_map, shrink1st_seq_xpath_encoded, shrink2nd_seq_xpath_encoded, get_filteredseq_xpath
 from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
 
@@ -29,12 +29,14 @@ print("INITIATED!")
 # url = "http://v.media.daum.net/v/20170609204506833?rcmd=r"
 url0 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=155256"
 url1 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
-url2 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=137326"
+url2 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=125473"
+url3 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=137326"
 
 # sampl1
 xpathFinder0 = XpathFinder(url0)
 xpathFinder1 = XpathFinder(url1)
 xpathFinder2 = XpathFinder(url2)
+xpathFinder3 = XpathFinder(url3)
 
 seq_xpath0 = xpathFinder0.get_seq_xpath()
 seq_xpath1 = xpathFinder1.get_seq_xpath()
@@ -50,12 +52,23 @@ seq_xpath_encoded2 = xpathFinder2.get_seq_xpath_encoded_2d()
 uniqseq_xpath_encoded0 = xpathFinder0.get_uniqseq_xpath_encoded()
 uniqseq_xpath_encoded1 = xpathFinder1.get_uniqseq_xpath_encoded()
 uniqseq_xpath_encoded2 = xpathFinder2.get_uniqseq_xpath_encoded()
+
 #############################################################################
 
 interInspector = InterInspector()
-intersect_xpath_encoded = get_intersect_xpath_encoded(
-	uniqseq_xpath_encoded0, uniqseq_xpath_encoded1)
+# Feed Samples
+interInspector.receive_pageinfo(xpathFinder0)
+interInspector.receive_pageinfo(xpathFinder1)
+interInspector.receive_pageinfo(xpathFinder2)
+interInspector.receive_pageinfo(xpathFinder3)
 
+
+interInspector.calculate_shape_intersect()
+intersect_xpath_encoded = interInspector.get_intersect_xpath_encoded()
+print(intersect_xpath_encoded)
+print("#############################################################################")
+
+# seq_map_xpath0 = xpathFinder0.make_seq_map_xpath(intersect_xpath_encoded)
 
 seq_map_xpath0 = make_map(seq_xpath_encoded0, intersect_xpath_encoded)
 seq_map_xpath1 = make_map(seq_xpath_encoded1, intersect_xpath_encoded)
@@ -74,24 +87,46 @@ print(len(filteredseq_xpath1))
 
 soup0 = xpathFinder0.get_soup()
 soup1 = xpathFinder1.get_soup()
+soup2 = xpathFinder2.get_soup()
+soup3 = xpathFinder3.get_soup()
 
 # for xpath0, xpath1 in zip(filteredseq_xpath0, filteredseq_xpath1):
-for i in range(20, len(filteredseq_xpath0)):
-	print("#############################################################################")
+for i in range(1, len(filteredseq_xpath0)):
+	print(i, "#############################################################################")
 	xpath0 = seq_xpath0[seq_map0[i]]
 	xpath1 = seq_xpath1[seq_map1[i]]
 	print(xpath0)
 	print(xpath1)
-	# elems_located0 = locate_element(soup0, xpath0, get_attr_elem)
-	# elems_located1 = locate_element(soup1, xpath1, get_attr_elem)
 	try:
-		eigentext0 = get_eigentext(locate_element(soup0, xpath0, get_attr_elem))
-		eigentext1 = get_eigentext(locate_element(soup1, xpath1, get_attr_elem))
+		elems_located0 = locate_element(soup0, xpath0, get_attr_elem)[-1]
+		eigentext0 = get_eigentext(elems_located0)
 		print(eigentext0)
+
 		print("_______________________________________________________________")
+		elems_located1 = locate_element(soup1, xpath0, get_attr_elem)[-1]
+		eigentext1 = get_eigentext(elems_located1)
 		print(eigentext1)
+
+		print("_______________________________________________________________")
+		elems_located2 = locate_element(soup2, xpath0, get_attr_elem)[-1]
+		eigentext2 = get_eigentext(elems_located2)
+		print(eigentext2)
+		
+		print("_______________________________________________________________")
+		elems_located3 = locate_element(soup3, xpath0, get_attr_elem)[-1]
+		eigentext3 = get_eigentext(elems_located3)
+		print(eigentext3)
+
+	except IndexError:
+		print(IndexError)
 	except TypeError:
 		print(TypeError)
+
+# soup2 = xpathFinder2.get_soup()
+# xpath_test = "html/0/body/0/div/0/div/3/div/1/div/0/div/0/div/1/h3/0/a/0/"
+# elems_located_test = locate_element(soup2, xpath_test, get_attr_elem)[-1]
+# eigentext_test = get_eigentext(elems_located_test)
+# print(eigentext_test)
 
 #############################################################################
 # Intra

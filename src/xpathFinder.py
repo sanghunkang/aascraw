@@ -55,6 +55,7 @@ class XpathFinder():
 		self.seq_xpath_encoded_2d = []
 		self.uniqseq_xpath_encoded = []
 		self.seq_xpath_encoded_occurence = []
+		self.seq_map_xpath = []
 
 		# Initial actions upon instantiation
 		self.get_HTMLdoc(url)
@@ -137,6 +138,21 @@ class XpathFinder():
 			for j, code in enumerate(xpath_encoded):
 				self.seq_xpath_encoded_3d[i, j, code] = 1
 
+	def make_seq_map_xpath(self, intersect_xpath_encoded):
+		seq_xpath_encoded = self.get_seq_xpath_encoded()
+		
+		seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0], 2), dtype=np.int32)
+		seq_map_xpath.fill(-1)
+		
+		index_mapped = 0
+		for i, xpath_encoded in enumerate(seq_xpath_encoded):
+			for j, xpath_encoded_uniq in enumerate(intersect_xpath_encoded):
+				if np.array_equal(xpath_encoded, xpath_encoded_uniq):
+					seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
+					index_mapped += 1
+		seq_map_xpath = seq_map_xpath[~np.all(seq_map_xpath == -1, axis=1)]
+		self.seq_map_xpath = seq_map_xpath
+
 	# Getters
 	def get_soup(self):
 		return self.soup
@@ -158,6 +174,9 @@ class XpathFinder():
 	
 	def get_shape_seq_xpath(self):
 		return self.shape_seq_xpath
+
+	def get_seq_map_xpath(self):
+		return self.seq_map_xpath
 
 
 
