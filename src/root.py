@@ -29,17 +29,13 @@ print("INITIATED!")
 
 #############################################################################
 # Generation
-
-
-
-seq_url = fetch_seq_from_file("../data/seq_url_news.txt") # News
-seq_url = fetch_seq_from_file("../data/seq_url_movies.txt") # Movies
+seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
+seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
 
 url0 = seq_url[0]
 url1 = seq_url[1]
 url2 = seq_url[2]
 url3 = seq_url[3]
-
 
 xpathFinder0 = XpathFinder(url0)
 xpathFinder1 = XpathFinder(url1)
