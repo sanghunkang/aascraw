@@ -14,6 +14,8 @@ import numpy as np
 # Import custom modules
 from driverController.driver import webdriverTailored
 from driverController.locator import get_attr_elem, locate_element, get_eigentext, get_eigentext_bw
+from localController.fetcher import fetch_seq_from_file
+
 from interInspector import InterInspector
 from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
@@ -28,22 +30,16 @@ print("INITIATED!")
 #############################################################################
 # Generation
 
-# url0 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or30-Hong_Kong_Skyline-Hong_Kong.html"
-# url1 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or40-Hong_Kong_Skyline-Hong_Kong.html"
-# url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
-# url = "http://v.media.daum.net/v/20170609204506833?rcmd=r"
 
-# Movies
-# url0 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=155256"
-# url1 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
-# url2 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=125473"
-# url3 = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=137326"
 
-# News
-url0 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=008&aid=0003889934&date=20170618&type=1&rankingSeq=1&rankingSectionId=100"
-url1 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=015&aid=0003783581&date=20170618&type=1&rankingSeq=1&rankingSectionId=105"
-url2 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=001&aid=0009345375&date=20170618&type=1&rankingSeq=1&rankingSectionId=104"
-url3 = "http://news.naver.com/main/ranking/read.nhn?mid=etc&sid1=111&rankingType=popular_day&oid=001&aid=0009345375&date=20170618&type=1&rankingSeq=1&rankingSectionId=102"
+seq_url = fetch_seq_from_file("../data/seq_url_news.txt") # News
+seq_url = fetch_seq_from_file("../data/seq_url_movies.txt") # Movies
+
+url0 = seq_url[0]
+url1 = seq_url[1]
+url2 = seq_url[2]
+url3 = seq_url[3]
+
 
 xpathFinder0 = XpathFinder(url0)
 xpathFinder1 = XpathFinder(url1)
@@ -79,10 +75,12 @@ for xpath in seq_xpath_canddt_inter:
 		print(IndexError)
 	print("#############################################################################")
 
-#############################################################################
+#####################d########################################################
 # Intra
 url = "https://www.amazon.com/s?rh=i%3Akitchen%2Cn%3A1055398%2Cn%3A%211063498%2Cn%3A284507%2Cn%3A915194%2Cn%3A289748%2Cp_89%3ADeLonghi%2Cp_6%3AATVPDKIKX0DER&bbn=289748&ie=UTF8&ref=vs_cte_r1_c1_delonghi&pf_rd_r=XJ4PFY14DAG7JD44YNAN&pf_rd_m=ATVPDKIKX0DER&pf_rd_t=Landing&pf_rd_i=915194&pf_rd_p=c3a7580e-3bde-4497-8e61-232d912a1aeb&pf_rd_s=merchandised-search-grid-t1-r1-c1"
-# url = "http://movie.naver.com/movie/bi/mi/basic.nhn?code=156083"
+# url0 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or30-Hong_Kong_Skyline-Hong_Kong.html"
+# url1 = "https://www.tripadvisor.co.kr/Attraction_Review-g294217-d2482919-Reviews-or40-Hong_Kong_Skyline-Hong_Kong.html"
+# url = "https://www.amazon.com/s/ref=br_pdt_mgUpt/136-5748595-7690834?_encoding=UTF8&rh=n%3A1055398&srs=10112675011&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=H0CVS4CGFH8ZKDF3N54G&pf_rd_t=36701&pf_rd_p=db21a8d3-3560-4f95-b840-a0a07adc52e0&pf_rd_i=desktop"
 """
 xpathFinder = XpathFinder(url)
 seq_xpath = xpathFinder.get_seq_xpath()
@@ -90,7 +88,7 @@ seq_xpath = xpathFinder.get_seq_xpath()
 seq_xpath_encoded_occurence = xpathFinder.get_seq_xpath_encoded_occurence()
 seq_xpath_encoded = xpathFinder.get_seq_xpath_encoded()
 seq_xpath_encoded_3d = xpathFinder.get_seq_xpath_encoded_3d()
-
+	
 # plt.imshow(seq_xpath_encoded)
 # plt.axes().set_aspect('auto', 'datalim')
 # plt.show()

@@ -79,13 +79,13 @@ class XpathFinder():
 
 		soup = BeautifulSoup(doc, "html.parser")
 		[s.decompose() for s in soup('br')]
-		[s.decompose() for s in soup('span')]
-		[s.decompose() for s in soup('p')]
+		# [s.decompose() for s in soup('span')]
+		# [s.decompose() for s in soup('p')]
 		# [s.decompose() for s in soup('em')]
 		# [s.decompose() for s in soup('strong')]
 		[s.extract() for s in soup('script')]
 		[s.extract() for s in soup('style')]
-		print(soup)
+		# print(soup)
 		self.soup = soup
 		# return soup
 

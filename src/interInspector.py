@@ -111,8 +111,8 @@ class InterInspector():
 				eigentext2 = seq_eigentext[2]
 
 				print(i, "#############################################################################")
+				print(xpath)
 				if eigentext0 != eigentext1 or eigentext1 != eigentext2:
-					print(xpath)
 					print(eigentext0)
 					print("_______________________________________________________________")
 					print(eigentext1)
