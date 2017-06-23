@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 
 def fetch_seq_from_file(fpath):
 	with open(fpath, "r") as fr:
