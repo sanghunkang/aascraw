@@ -21,6 +21,7 @@ from intraInspector import IntraInspector #, get_max_size_window, calculate_max_
 from xpathFinder import XpathFinder
 
 # Import package-wide constants
+import TESTCONFIG
 from constGlobal import *
 
 print("INITIATED!")
@@ -31,15 +32,46 @@ print("INITIATED!")
 # Generation
 seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
 seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
+seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Movies
 
-url0 = seq_url[0]
-url1 = seq_url[1]
-url2 = seq_url[2]
-url3 = seq_url[3]
+driver = webdriverTailored("C:\\dev\\aascraw\\drivers\\chromedriver.exe")
+driver.get("https://nid.naver.com/nidlogin.login")
 
-xpathFinder0 = XpathFinder(url0)
-xpathFinder1 = XpathFinder(url1)
-xpathFinder2 = XpathFinder(url2)
+seq_canddt_input = driver.find_elements_by_tag_name("input")
+for canddt_input in seq_canddt_input:
+	aa = canddt_input.get_attribute("type")
+	if "text" in aa:
+		canddt_input.send_keys(TESTCONFIG.USER_ID)
+		is_inserted_userid = True
+	if "password" in aa:
+		canddt_input.send_keys(TESTCONFIG.USER_PW)
+		is_inserted_userpw = True
+	if "submit" in aa and is_inserted_userid and is_inserted_userpw:
+		canddt_input.click()
+		break
+soup = []
+driver.get(seq_url[0])
+# soup.append(driver.get_soup())
+soup.append(driver.get_pagesource_in_iframe(8))
+
+driver.get(seq_url[1])
+# soup.append(driver.get_soup())
+soup.append(driver.get_pagesource_in_iframe(8))
+
+driver.get(seq_url[2])
+# soup.append(driver.get_soup())
+soup.append(driver.get_pagesource_in_iframe(8))
+print("#############################################################################")
+
+# xpathFinder0 = XpathFinder(seq_url[0], "url")
+# xpathFinder1 = XpathFinder(seq_url[1], "url")
+# xpathFinder2 = XpathFinder(seq_url[2], "url")
+# xpathFinder3 = XpathFinder(seq_url[3], "url")
+
+xpathFinder0 = XpathFinder(soup[0], "soup")
+xpathFinder1 = XpathFinder(soup[1], "soup")
+xpathFinder2 = XpathFinder(soup[2], "soup")
+# xpathFinder3 = XpathFinder(soup[3], "soup")
 
 # Feed Samples
 interInspector = InterInspector()
@@ -53,23 +85,22 @@ seq_xpath_canddt_inter = interInspector.get_seq_xpath_canddt_inter()
 
 #############################################################################
 # Testing
-xpathFinder3 = XpathFinder(url3)
 
-soup2 = xpathFinder2.get_soup()
-soup3 = xpathFinder3.get_soup()
-for xpath in seq_xpath_canddt_inter:
-	try:
-		print(xpath)
-		elems_located_test2 = locate_element(soup2, xpath, get_attr_elem)[-1]
-		eigentext_test2 = get_eigentext(elems_located_test2)
-		print(eigentext_test2)
+# soup2 = xpathFinder2.get_soup()
+# soup3 = xpathFinder3.get_soup()
+# for xpath in seq_xpath_canddt_inter:
+# 	try:
+# 		print(xpath)
+# 		elems_located_test2 = locate_element(soup2, xpath, get_attr_elem)[-1]
+# 		eigentext_test2 = get_eigentext(elems_located_test2)
+# 		print(eigentext_test2)
 
-		elems_located_test3 = locate_element(soup3, xpath, get_attr_elem)[-1]
-		eigentext_test3 = get_eigentext(elems_located_test3)
-		print(eigentext_test3)
-	except IndexError:
-		print(IndexError)
-	# print("#############################################################################")
+# 		elems_located_test3 = locate_element(soup3, xpath, get_attr_elem)[-1]
+# 		eigentext_test3 = get_eigentext(elems_located_test3)
+# 		print(eigentext_test3)
+# 	except IndexError:
+# 		print(IndexError)
+# 	# print("#############################################################################")
 
 #####################d########################################################
 # Intra

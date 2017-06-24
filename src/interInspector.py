@@ -111,16 +111,12 @@ class InterInspector():
 
 			print(i, "#############################################################################")
 			print(xpath)
-
 			if has_diff == True:
 				seq_xpath_canddt_inter.append(xpath)
 				for eigentext in seq_eigentext:
 					print(eigentext)
 					print("_______________________________________________________________")
-			# except IndexError: # Once Needed due to wrong indexation (interInspector)
-			# 	print(IndexError)
-			# except TypeError: # Once needed due to inadequate filtering (xpathFinder)
-			# 	print(TypeError)
+
 		self.seq_xpath_canddt_inter = seq_xpath_canddt_inter
 		# return seq_xpath_canddt_inter
 

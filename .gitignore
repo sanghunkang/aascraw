@@ -1,3 +1,5 @@
+src/TESTCONFIG.py
+
 *.log
 *.pyc
 *.txt

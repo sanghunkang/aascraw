@@ -43,7 +43,7 @@ def encode_xpath(xpath, seq_tagcode, range_xpath):
 	return xpath_encoded_tagname, xpath_encoded_occurence
 
 class XpathFinder():
-	def __init__(self, url):
+	def __init__(self, arg, type_arg):
 		# Caches
 		self.__path_prev = ""
 		self.__stack_path_prev = []
@@ -58,17 +58,24 @@ class XpathFinder():
 		self.seq_map_xpath = []
 
 		# Initial actions upon instantiation
-		self.get_HTMLdoc(url)
-		
+		if type_arg == "soup":
+			self.receive_soup(arg)
+		elif type_arg == "url":
+			self.receive_url(arg)
 		self.run_make_seq_xpath()
-		# self.filter_seq_xpath()
 
-		# self.make_shape_seq_xpath()
-		# self.make_seq_xpath_encoded()
-		# self.make_uniqseq_xpath_encoded()
-		# self.make_seq_xpath_encoded_sparse()
+	def receive_soup(self, soup):
+		[s.decompose() for s in soup('br')]
+		[s.decompose() for s in soup('span')]
+		[s.decompose() for s in soup('p')]
+		[s.decompose() for s in soup('em')]
+		[s.decompose() for s in soup('strong')]
+		[s.extract() for s in soup('script')]
+		[s.extract() for s in soup('style')]
+		print(soup)
+		self.soup = soup
 
-	def get_HTMLdoc(self, url):
+	def receive_url(self, url):
 		headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
 		
 		req = request.Request(url, headers=headers)
@@ -101,6 +108,7 @@ class XpathFinder():
 	
 	def make_seq_xpath(self, elem):
 		list_tmp = []
+		print(elem)
 		for child in elem.children:
 			count = list_tmp.count(child.name)
 			list_tmp.append(child.name)
