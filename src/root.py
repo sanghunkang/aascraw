@@ -30,49 +30,39 @@ print("INITIATED!")
 
 #############################################################################
 # Generation
-seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
-seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
-seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Movies
-
-driver = webdriverTailored("C:\\dev\\aascraw\\drivers\\chromedriver.exe")
-driver.get("https://nid.naver.com/nidlogin.login")
-
-seq_canddt_input = driver.find_elements_by_tag_name("input")
-for canddt_input in seq_canddt_input:
-	aa = canddt_input.get_attribute("type")
-	if "text" in aa:
-		canddt_input.send_keys(TESTCONFIG.USER_ID)
-		is_inserted_userid = True
-	if "password" in aa:
-		canddt_input.send_keys(TESTCONFIG.USER_PW)
-		is_inserted_userpw = True
-	if "submit" in aa and is_inserted_userid and is_inserted_userpw:
-		canddt_input.click()
-		break
-soup = []
-driver.get(seq_url[0])
-# soup.append(driver.get_soup())
-soup.append(driver.get_pagesource_in_iframe(8))
-
-driver.get(seq_url[1])
-# soup.append(driver.get_soup())
-soup.append(driver.get_pagesource_in_iframe(8))
-
-driver.get(seq_url[2])
-# soup.append(driver.get_soup())
-soup.append(driver.get_pagesource_in_iframe(8))
-print("#############################################################################")
+# Simplest
+# seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
+# seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
 
 # xpathFinder0 = XpathFinder(seq_url[0], "url")
 # xpathFinder1 = XpathFinder(seq_url[1], "url")
 # xpathFinder2 = XpathFinder(seq_url[2], "url")
 # xpathFinder3 = XpathFinder(seq_url[3], "url")
 
+# If sign-in (+ switching frame) is needed
+seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
+
+driver = webdriverTailored(PATH_DRIVER_CHROME)
+driver.get("https://nid.naver.com/nidlogin.login")
+driver.send_info_signin(TESTCONFIG.USER_ID, TESTCONFIG.USER_PW)
+
+soup = []
+driver.get(seq_url[0])
+soup.append(driver.get_soup_from_iframe(8))
+
+driver.get(seq_url[1])
+soup.append(driver.get_soup_from_iframe(8))
+
+driver.get(seq_url[2])
+soup.append(driver.get_soup_from_iframe(8))
+driver.kill()
+
 xpathFinder0 = XpathFinder(soup[0], "soup")
 xpathFinder1 = XpathFinder(soup[1], "soup")
 xpathFinder2 = XpathFinder(soup[2], "soup")
 # xpathFinder3 = XpathFinder(soup[3], "soup")
 
+#############################################################################
 # Feed Samples
 interInspector = InterInspector()
 interInspector.receive_pageinfo(xpathFinder0)

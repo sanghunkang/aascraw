@@ -49,6 +49,7 @@ class XpathFinder():
 		self.__stack_path_prev = []
 
 		# Values potentially to return
+		self.cmd_driver = None
 		self.soup = None
 		self.seq_xpath = []
 		self.shape_seq_xpath = ()
@@ -58,10 +59,9 @@ class XpathFinder():
 		self.seq_map_xpath = []
 
 		# Initial actions upon instantiation
-		if type_arg == "soup":
-			self.receive_soup(arg)
-		elif type_arg == "url":
-			self.receive_url(arg)
+		if type_arg == "soup": self.receive_soup(arg)
+		elif type_arg == "url": self.receive_url(arg)
+		
 		self.run_make_seq_xpath()
 
 	def receive_soup(self, soup):
@@ -72,7 +72,8 @@ class XpathFinder():
 		[s.decompose() for s in soup('strong')]
 		[s.extract() for s in soup('script')]
 		[s.extract() for s in soup('style')]
-		print(soup)
+		
+		self.cmd_driver = "cmd control here"
 		self.soup = soup
 
 	def receive_url(self, url):
@@ -108,7 +109,6 @@ class XpathFinder():
 	
 	def make_seq_xpath(self, elem):
 		list_tmp = []
-		print(elem)
 		for child in elem.children:
 			count = list_tmp.count(child.name)
 			list_tmp.append(child.name)

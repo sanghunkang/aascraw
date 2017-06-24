@@ -22,9 +22,9 @@ SEQ_TAGCODE = [
 SYSTEM = sys.platform
 
 if "linux" in SYSTEM or "mac" in SYSTEM:
-	# path_phantomjs = path_driver + "phantomjs"
-	PATH_DRIVER = os.path.abspath('..') + '/drivers/'  + "phantomjs"
+	PATH_DRIVER_PHANTOMJS = os.path.abspath('..') + "/drivers/phantomjs"
+	PATH_DRIVER_CHROME = os.path.abspath('..') + "/drivers/chromedriver"
 elif "win" in SYSTEM:
-	# path_phantomjs = path_driver + "phantomjs.exe"
-	PATH_DRIVER = os.path.abspath('..') + '\\drivers\\'  + "phantomjs.exe"
+	PATH_DRIVER_PHANTOMJS = os.path.abspath('..') + "\\drivers\\phantomjs.exe"
+	PATH_DRIVER_CHROME = os.path.abspath('..') + "\\drivers\\chromedriver.exe"
 

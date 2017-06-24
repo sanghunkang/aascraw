@@ -16,15 +16,10 @@ from constGlobal import *
 class InterInspector():
 	def __init__(self):
 		self.seq_pageinfo = []
-
 		self.intersect_xpath_encoded = []
 	
-		
-
 	def receive_pageinfo(self, pageinfo):
 		self.seq_pageinfo.append(pageinfo)
-		
-		# self.make_intersect_xpath_encoded()
 		self.make_seq_seq_xpath()
 
 	def calculate_shape_intersect(self):

@@ -17,42 +17,40 @@ ClassDriver = webdriver.Chrome
 class webdriverTailored(ClassDriver):
 	def __init__(self, path_driver):
 		ClassDriver.__init__(self, path_driver)
-		
-		self.seq_iframe = []
-		
-	def detect_seq_iframe(self):
-		self.seq_iframe = self.find_elements_by_tag_name('iframe')
 
-	def get_pagesource_in_iframe(self, index):
-		self.detect_seq_iframe()
-		iframe = self.seq_iframe[index]
-		self.switch_to_frame(iframe)
-		psource = self.page_source
-		
-		soup = BeautifulSoup(psource, "html.parser")
+	def send_info_signin(self, user_id, user_pw):
+		# Shabby yet...
+		seq_canddt_input = self.find_elements_by_tag_name("input")
+		for canddt_input in seq_canddt_input:
+			type_input = canddt_input.get_attribute("type")
+			if "text" in type_input:
+				canddt_input.send_keys(user_id)
+				is_inserted_userid = True
 
-		self.switch_to_default_content()
-		return soup
+			if "password" in type_input:
+				canddt_input.send_keys(user_pw)
+				is_inserted_userpw = True
+
+			if "submit" in type_input and is_inserted_userid and is_inserted_userpw:
+				canddt_input.click()
+				break
 
 	def kill(self):
 		self.close()
 		self.quit()
 
+	# Getters
+	def get_soup_from_iframe(self, index):
+		iframe = self.find_elements_by_tag_name('iframe')[index]
+		self.switch_to_frame(iframe)
+		
+		psource = self.page_source		
+		soup = BeautifulSoup(psource, "html.parser")
+
+		self.switch_to_default_content()
+		return soup
 
 	def get_soup(self):
 		psource = self.page_source
 		soup = BeautifulSoup(psource, "html.parser")
-		self.soup = soup
-		return self.soup
-"""
-driver = webdriverTailored(PATH_DRIVER)
-driver.get(url)
-driver.detect_seq_iframe()
-for i, iframe in enumerate(driver.seq_iframe):
-	psrc = driver.get_pagesource_in_iframe(i)
-	soup = BeautifulSoup(psrc, "html.parser")	
-	for xpath in get_list_xpath(soup,[]): #, ["p", "script"]):
-		print(xpath)
-	print("#############################################################################")
-driver.kill()
-"""
+		return soup
