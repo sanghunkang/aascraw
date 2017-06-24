@@ -61,12 +61,12 @@ class XpathFinder():
 		self.get_HTMLdoc(url)
 		
 		self.run_make_seq_xpath()
-		self.filter_seq_xpath()
+		# self.filter_seq_xpath()
 
-		self.make_shape_seq_xpath()
-		self.make_seq_xpath_encoded()
-		self.make_uniqseq_xpath_encoded()
-		self.make_seq_xpath_encoded_sparse()
+		# self.make_shape_seq_xpath()
+		# self.make_seq_xpath_encoded()
+		# self.make_uniqseq_xpath_encoded()
+		# self.make_seq_xpath_encoded_sparse()
 
 	def get_HTMLdoc(self, url):
 		headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
@@ -92,6 +92,12 @@ class XpathFinder():
 	def run_make_seq_xpath(self):
 		# Becasue make_seq_xpath is a recursive action
 		self.make_seq_xpath(self.get_soup())
+		self.filter_seq_xpath()
+
+		self.make_shape_seq_xpath()
+		self.make_seq_xpath_encoded()
+		self.make_uniqseq_xpath_encoded()
+		self.make_seq_xpath_encoded_sparse()
 	
 	def make_seq_xpath(self, elem):
 		list_tmp = []
@@ -113,7 +119,7 @@ class XpathFinder():
 		# Set operation doesn't preserve the order
 		seq_xpath_filtered = []
 		for xpath in self.seq_xpath:
-			if xpath not in seq_xpath_filtered:
+			if xpath not in seq_xpath_filtered and len(xpath) > 1:
 				seq_xpath_filtered.append(xpath)
 
 		self.seq_xpath = seq_xpath_filtered
