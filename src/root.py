@@ -31,35 +31,35 @@ print("INITIATED!")
 #############################################################################
 # Generation
 # Simplest
-# seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
-# seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
+seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
+seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
 
-# xpathFinder0 = XpathFinder(seq_url[0], "url")
-# xpathFinder1 = XpathFinder(seq_url[1], "url")
-# xpathFinder2 = XpathFinder(seq_url[2], "url")
-# xpathFinder3 = XpathFinder(seq_url[3], "url")
+xpathFinder0 = XpathFinder(seq_url[0], "url")
+xpathFinder1 = XpathFinder(seq_url[1], "url")
+xpathFinder2 = XpathFinder(seq_url[2], "url")
+xpathFinder3 = XpathFinder(seq_url[3], "url")
 
 # If sign-in (+ switching frame) is needed
-seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
+# seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
 
-driver = webdriverTailored(PATH_DRIVER_CHROME)
-driver.get("https://nid.naver.com/nidlogin.login")
-driver.send_info_signin(TESTCONFIG.USER_ID, TESTCONFIG.USER_PW)
+# driver = webdriverTailored("..\\drivers\\chromedriver.exe")
+# driver.get("https://nid.naver.com/nidlogin.login")
+# driver.send_info_signin(TESTCONFIG.USER_ID, TESTCONFIG.USER_PW)
 
-soup = []
-driver.get(seq_url[0])
-soup.append(driver.get_soup_from_iframe(8))
+# soup = []
+# driver.get(seq_url[0])
+# soup.append(driver.get_soup_from_iframe(8))
 
-driver.get(seq_url[1])
-soup.append(driver.get_soup_from_iframe(8))
+# driver.get(seq_url[1])
+# soup.append(driver.get_soup_from_iframe(8))
 
-driver.get(seq_url[2])
-soup.append(driver.get_soup_from_iframe(8))
-driver.kill()
+# driver.get(seq_url[2])
+# soup.append(driver.get_soup_from_iframe(8))
+# driver.kill()
 
-xpathFinder0 = XpathFinder(soup[0], "soup")
-xpathFinder1 = XpathFinder(soup[1], "soup")
-xpathFinder2 = XpathFinder(soup[2], "soup")
+# xpathFinder0 = XpathFinder(soup[0], "soup")
+# xpathFinder1 = XpathFinder(soup[1], "soup")
+# xpathFinder2 = XpathFinder(soup[2], "soup")
 # xpathFinder3 = XpathFinder(soup[3], "soup")
 
 #############################################################################

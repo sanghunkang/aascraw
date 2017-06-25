@@ -65,14 +65,14 @@ class XpathFinder():
 		self.run_make_seq_xpath()
 
 	def receive_soup(self, soup):
-		[s.decompose() for s in soup('br')]
-		[s.decompose() for s in soup('span')]
-		[s.decompose() for s in soup('p')]
-		[s.decompose() for s in soup('em')]
-		[s.decompose() for s in soup('strong')]
-		[s.extract() for s in soup('script')]
-		[s.extract() for s in soup('style')]
-		
+		[s.unwrap() for s in soup('br')]
+		[s.unwrap() for s in soup('span')]
+		[s.unwrap() for s in soup('p')]
+		[s.unwrap() for s in soup('em')]
+		[s.unwrap() for s in soup('strong')]
+		[s.decompose() for s in soup('script')]
+		[s.decompose() for s in soup('style')]
+		print(soup)		
 		self.cmd_driver = "cmd control here"
 		self.soup = soup
 
@@ -86,13 +86,13 @@ class XpathFinder():
 		doc = req.read().decode(charset)
 
 		soup = BeautifulSoup(doc, "html.parser")
-		[s.decompose() for s in soup('br')]
-		# [s.decompose() for s in soup('span')]
-		# [s.decompose() for s in soup('p')]
-		# [s.decompose() for s in soup('em')]
-		# [s.decompose() for s in soup('strong')]
-		[s.extract() for s in soup('script')]
-		[s.extract() for s in soup('style')]
+		[s.unwrap() for s in soup('br')]
+		[s.unwrap() for s in soup('span')]
+		[s.unwrap() for s in soup('p')]
+		[s.unwrap() for s in soup('em')]
+		[s.unwrap() for s in soup('strong')]
+		[s.decompose() for s in soup('script')]
+		[s.decompose() for s in soup('style')]
 		# print(soup)
 		self.soup = soup
 		# return soup
