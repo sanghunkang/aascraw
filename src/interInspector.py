@@ -9,34 +9,28 @@ import numpy as np
 
 # Import custom modules
 from driverController.locator import get_attr_elem, locate_element, get_eigentext
+from driverController.locator import Locator
 
 # Import package-wide constants
 from constGlobal import *
 
-class InterInspector():
+class InterInspector(Locator):
 	def __init__(self):
 		self.seq_pageinfo = []
 		self.intersect_xpath_encoded = []
 	
 	def receive_pageinfo(self, pageinfo):
 		self.seq_pageinfo.append(pageinfo)
-		self.make_seq_seq_xpath()
 
-	def calculate_shape_intersect(self):
-		seq_pageinfo = self.get_seq_pageinfo()
-
+	def calculate_shape_intersect(self, seq_pageinfo):
 		nrows = min([pageinfo.get_uniqseq_xpath_encoded().shape[0] for pageinfo in seq_pageinfo])
 		ncols = min([pageinfo.get_uniqseq_xpath_encoded().shape[1] for pageinfo in seq_pageinfo])
+		return nrows, ncols
 
-		self.shape_intersect = (nrows, ncols)
-
-	def _make_seq_for_intersect(self):
-		seq_pageinfo = self.get_seq_pageinfo()
-		nrows, ncols = self.get_shape_intersect()
-
+	def make_seq_for_intersect(self, seq_pageinfo, shape):
 		dtype = {
-			'names':['f{}'.format(i) for i in range(ncols)], 
-			'formats':ncols * [np.int32]
+			'names':['f{}'.format(i) for i in range(shape[1])], 
+			'formats':shape[1] * [np.int32]
 		}
 		seq_for_intersect = []
 		for pageinfo in seq_pageinfo:
@@ -45,34 +39,32 @@ class InterInspector():
 
 		return seq_for_intersect
 
-	def make_intersect_xpath_encoded(self):
-		self.calculate_shape_intersect()
+	# def make_intersect_xpath_encoded(self):
+	# 	seq_pageinfo = self.get_seq_pageinfo()
+	# 	shape = self.calculate_shape_intersect(seq_pageinfo)
+	# 	seq_for_intersect = self.make_seq_for_intersect(seq_pageinfo, shape)
 
-		nrows, ncols = self.get_shape_intersect()
-		seq_for_intersect = self._make_seq_for_intersect()
-
-		intersect_xpath_encoded = reduce(np.intersect1d, seq_for_intersect)
-		intersect_xpath_encoded = intersect_xpath_encoded.view(np.int32).reshape(-1, ncols)
+	# 	intersect_xpath_encoded = reduce(np.intersect1d, seq_for_intersect)
+	# 	intersect_xpath_encoded = intersect_xpath_encoded.view(np.int32).reshape(-1, ncols)
 		
-		self.intersect_xpath_encoded = intersect_xpath_encoded
+	# 	self.intersect_xpath_encoded = intersect_xpath_encoded
 
-	def make_seq_seq_xpath(self):
-		seq_pageinfo = self.get_seq_pageinfo()
+	def make_seq_seq_xpath(self, seq_pageinfo):
 		seq_seq_xpath = [pageinfo.get_seq_xpath() for pageinfo in seq_pageinfo]
-		self.seq_seq_xpath = seq_seq_xpath
+		return seq_seq_xpath
 
-	def make_seq_xpath_target(self):
-		seq_seq_xpath = self.get_seq_seq_xpath()
-
+	def make_seq_xpath_target(self, seq_seq_xpath):
 		seq_len = [len(seq_xpath) for seq_xpath in seq_seq_xpath]
 		index = seq_len.index(min(seq_len))
 
 		seq_xpath_target = seq_seq_xpath[index]
-		self.seq_xpath_target = seq_xpath_target
+		return seq_xpath_target
 
 	def make_intersect_xpath(self):
-		seq_xpath_target = self.get_seq_xpath_target()
-		seq_seq_xpath = self.get_seq_seq_xpath()
+		seq_pageinfo = self.get_seq_pageinfo()
+		
+		seq_seq_xpath = self.make_seq_seq_xpath(seq_pageinfo)
+		seq_xpath_target = self.make_seq_xpath_target(seq_seq_xpath)
 
 		intersect_xpath = []
 		for i, xpath in enumerate(seq_xpath_target):
@@ -87,7 +79,7 @@ class InterInspector():
 		self.intersect_xpath = intersect_xpath
 
 	def make_seq_xpath_canddt_inter(self):
-		self.make_seq_xpath_target()
+		# self.make_seq_xpath_target()
 		self.make_intersect_xpath()
 
 		seq_pageinfo = self.get_seq_pageinfo()
@@ -97,7 +89,7 @@ class InterInspector():
 		for i, xpath in enumerate(intersect_xpath):
 			# try:
 			seq_elem_located = [locate_element(pageinfo.get_soup(), xpath, get_attr_elem)[-1] for pageinfo in seq_pageinfo]
-			seq_eigentext = [get_eigentext(elem_located) for elem_located in seq_elem_located]
+			seq_eigentext = [self.get_eigentext(elem_located) for elem_located in seq_elem_located]
 			seq_eigentext.sort()
 			
 			has_diff = False

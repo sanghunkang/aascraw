@@ -14,7 +14,6 @@ import numpy as np
 # Import custom modules
 from driverController.driver import webdriverTailored
 import driverController.locator as locator
-# from driverController.locator import get_attr_elem, locate_element, get_eigentext, get_eigentext_bw
 from localController.fetcher import fetch_seq_from_file
 
 from interInspector import InterInspector
@@ -40,29 +39,6 @@ pageinfo0 = xpathFinder.extract_pageinfo(seq_url[0])
 pageinfo1 = xpathFinder.extract_pageinfo(seq_url[1])
 pageinfo2 = xpathFinder.extract_pageinfo(seq_url[2])
 pageinfo3 = xpathFinder.extract_pageinfo(seq_url[3])
-
-# If sign-in (+ switching frame) is needed
-# seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
-
-# driver = webdriverTailored("..\\drivers\\chromedriver.exe")
-# driver.get("https://nid.naver.com/nidlogin.login")
-# driver.send_info_signin(TESTCONFIG.USER_ID, TESTCONFIG.USER_PW)
-
-# soup = []
-# driver.get(seq_url[0])
-# soup.append(driver.get_soup_from_iframe(8))
-
-# driver.get(seq_url[1])
-# soup.append(driver.get_soup_from_iframe(8))
-
-# driver.get(seq_url[2])
-# soup.append(driver.get_soup_from_iframe(8))
-# driver.kill()
-
-# xpathFinder0 = XpathFinder(soup[0], "soup")
-# xpathFinder1 = XpathFinder(soup[1], "soup")
-# xpathFinder2 = XpathFinder(soup[2], "soup")
-# xpathFinder3 = XpathFinder(soup[3], "soup")
 
 #############################################################################
 # Feed Samples
@@ -93,6 +69,30 @@ seq_xpath_canddt_inter = interInspector.get_seq_xpath_canddt_inter()
 # 	except IndexError:
 # 		print(IndexError)
 # 	# print("#############################################################################")
+
+
+# If sign-in (+ switching frame) is needed
+# seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
+
+# driver = webdriverTailored("..\\drivers\\chromedriver.exe")
+# driver.get("https://nid.naver.com/nidlogin.login")
+# driver.send_info_signin(TESTCONFIG.USER_ID, TESTCONFIG.USER_PW)
+
+# soup = []
+# driver.get(seq_url[0])
+# soup.append(driver.get_soup_from_iframe(8))
+
+# driver.get(seq_url[1])
+# soup.append(driver.get_soup_from_iframe(8))
+
+# driver.get(seq_url[2])
+# soup.append(driver.get_soup_from_iframe(8))
+# driver.kill()
+
+
+
+
+
 
 #####################d########################################################
 # Intra

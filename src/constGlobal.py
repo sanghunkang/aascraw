@@ -4,7 +4,8 @@
 # Import built-in packages
 import os, sys
 
-
+SEQ_TAG_UNWRAP = ["br","span","p","em","img","strong"]
+SEQ_TAG_DECOMP = ["a","script","style"]
 SEQ_TAGCODE = [
 	"","a","abbr","acronym","address","applet","area","article","aside","audio",
 	"b","base","basefont","bdi","bdo","big","blockquote","body","br","button",
@@ -19,8 +20,8 @@ SEQ_TAGCODE = [
 	"style","sub","summary","sup","table","tbody","td","textarea","tfoot","th",
 	"thead","time","title","tr","track","tt","u","ul","var","video","wbr",
 ]
-SYSTEM = sys.platform
 
+SYSTEM = sys.platform
 if "linux" in SYSTEM or "mac" in SYSTEM:
 	PATH_DRIVER_PHANTOMJS = os.path.abspath('..') + "/drivers/phantomjs"
 	PATH_DRIVER_CHROME = os.path.abspath('..') + "/drivers/chromedriver"
