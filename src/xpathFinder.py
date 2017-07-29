@@ -13,26 +13,23 @@ import numpy as np
 # Import package-wide constants
 from constGlobal import *
 
-# def encode_xpath(xpath, seq_tagcode, range_xpath):
-# 	xpath_encoded_tagname = np.zeros(shape=(range_xpath), dtype=np.int32)
-# 	xpath_encoded_occurence = np.zeros(shape=(range_xpath), dtype=np.int32)
-# 	seq_elem = xpath.split("/")
-	
-# 	for i in range(0, len(seq_elem)-1, 2):
-# 		try:
-# 			index = int(i/2)
-# 			xpath_encoded_tagname[index] = SEQ_TAGCODE.index(seq_elem[i])
-# 			xpath_encoded_occurence[index] = int(seq_elem[i+1])
-# 		except ValueError: # Trivial error not so important for now
-# 			pass
+class Pageinfo():
+	def __init__(self, soup, seq_xpath, uniqseq_xpath_encoded):
+		self.soup = soup
+		self.seq_xpath = seq_xpath
+		self.uniqseq_xpath_encoded = uniqseq_xpath_encoded
 
-# 	return xpath_encoded_tagname, xpath_encoded_occurence
+	def get_soup(self):
+		return self.soup
 
-class PageInfo():
-	pass
+	def get_seq_xpath(self):
+		return self.seq_xpath
+
+	def get_uniqseq_xpath_encoded(self):
+		return self.uniqseq_xpath_encoded
 
 class XpathFinder():
-	def __init__(self, arg):
+	def __init__(self):
 		# Caches
 		self.__path_prev = ""
 		self.__stack_path_prev = []
@@ -48,10 +45,6 @@ class XpathFinder():
 		self.seq_map_xpath = []
 
 		# Initial actions upon instantiation
-		if isinstance(arg, str): self.receive_url(arg)
-		elif isinstance(arg, bs4.BeautifulSoup): self.receive_soup(arg)
-		
-		self.run_make_seq_xpath()
 
 	def render_soup(self, soup):
 		"""
@@ -71,6 +64,7 @@ class XpathFinder():
 		for tag_decomp in seq_tag_decomp: [s.decompose() for s in soup(tag_decomp)]
 
 		return soup
+
 	def receive_soup(self, soup):
 		soup = self.render_soup(soup)
 		print(soup)
@@ -93,15 +87,36 @@ class XpathFinder():
 		soup = bs4.BeautifulSoup(doc, "html.parser")
 		self.receive_soup(soup)
 
-	def run_make_seq_xpath(self):
+	def run_make_seq_xpath(self, arg):
+		# Caches
+		self.__path_prev = ""
+		self.__stack_path_prev = []
+
+		# Values potentially to return
+		self.cmd_driver = None
+		self.soup = None
+		self.seq_xpath = []
+		self.shape_seq_xpath = ()
+		self.seq_xpath_encoded = []
+		self.uniqseq_xpath_encoded = []
+		self.seq_xpath_encoded_occurence = []
+		self.seq_map_xpath = []
+
+		if isinstance(arg, str): self.receive_url(arg)
+		elif isinstance(arg, bs4.BeautifulSoup): self.receive_soup(arg)
+
 		# Becasue make_seq_xpath is a recursive action
 		self.make_seq_xpath(self.get_soup())
 		self.filter_seq_xpath()
 
 		self.make_shape_seq_xpath()
+
 		self.make_seq_xpath_encoded()
 		self.make_uniqseq_xpath_encoded()
-		self.make_seq_xpath_encoded_sparse()
+
+		# self.make_seq_xpath_encoded_sparse()
+
+	
 
 	def encode_xpath(self, xpath, seq_tagcode, range_xpath):
 		xpath_encoded_tagname = np.zeros(shape=(range_xpath), dtype=np.int32)
@@ -159,42 +174,49 @@ class XpathFinder():
 	def make_uniqseq_xpath_encoded(self):
 		seq_xpath_encoded = self.get_seq_xpath_encoded()
 		self.uniqseq_xpath_encoded = np.vstack({tuple(row) for row in seq_xpath_encoded})
-		
+	
+	def extract_pageinfo(self, arg):
+		self.run_make_seq_xpath(arg)
+		soup = self.get_soup()
+		seq_xpath = self.get_seq_xpath()
+		uniqseq_xpath_encoded = self.get_uniqseq_xpath_encoded()
 
-	def make_seq_xpath_encoded_sparse(self):
-		shape = self.shape_seq_xpath
-		self.seq_xpath_encoded_sparse = np.zeros(shape=(shape[0], shape[1], len(SEQ_TAGCODE)), dtype=np.int32)
-		for i, xpath_encoded in enumerate(self.get_seq_xpath_encoded()):
-			for j, code in enumerate(xpath_encoded):
-				self.seq_xpath_encoded_sparse[i, j, code] = 1
+		pagainfo = Pageinfo(soup, seq_xpath, uniqseq_xpath_encoded)
+		return pagainfo
 
-	# Inter
-	def make_seq_map_xpath(self, intersect_xpath_encoded):
-		seq_xpath_encoded = self.get_seq_xpath_encoded()
-		
-		seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0], 2), dtype=np.int32)
-		seq_map_xpath.fill(-1)
-		
-		index_mapped = 0
-		for i, xpath_encoded in enumerate(seq_xpath_encoded):
-			for j, xpath_encoded_uniq in enumerate(intersect_xpath_encoded):
-				if np.array_equal(xpath_encoded, xpath_encoded_uniq):
-					seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
-					index_mapped += 1
-		seq_map_xpath = seq_map_xpath[~np.all(seq_map_xpath == -1, axis=1)]
-		
-		self.seq_map_xpath = seq_map_xpath
+	# def make_seq_xpath_encoded_sparse(self):
+	# 	shape = self.shape_seq_xpath
+	# 	self.seq_xpath_encoded_sparse = np.zeros(shape=(shape[0], shape[1], len(SEQ_TAGCODE)), dtype=np.int32)
+	# 	for i, xpath_encoded in enumerate(self.get_seq_xpath_encoded()):
+	# 		for j, code in enumerate(xpath_encoded):
+	# 			self.seq_xpath_encoded_sparse[i, j, code] = 1
 
 	# Inter
-	def make_shrunkseq_xpath_encoded(self):
-		seq_map_xpath = self.get_seq_map_xpath()
-		seq_xpath_encoded = self.get_seq_xpath_encoded()
+	# def make_seq_map_xpath(self, intersect_xpath_encoded):
+	# 	seq_xpath_encoded = self.get_seq_xpath_encoded()
+		
+	# 	seq_map_xpath = np.zeros(shape=(seq_xpath_encoded.shape[0], 2), dtype=np.int32)
+	# 	seq_map_xpath.fill(-1)
+		
+	# 	index_mapped = 0
+	# 	for i, xpath_encoded in enumerate(seq_xpath_encoded):
+	# 		for j, xpath_encoded_uniq in enumerate(intersect_xpath_encoded):
+	# 			if np.array_equal(xpath_encoded, xpath_encoded_uniq):
+	# 				seq_map_xpath[i] = np.array([i, index_mapped], dtype=np.int32)
+	# 				index_mapped += 1
+	# 	seq_map_xpath = seq_map_xpath[~np.all(seq_map_xpath == -1, axis=1)]
+		
+	# 	self.seq_map_xpath = seq_map_xpath
 
-		shrunkseq_xpath_encoded = np.zeros(shape=(seq_map_xpath.shape[0], seq_xpath_encoded.shape[1]), dtype=np.int32)
-		for map_xpath in seq_map_xpath:
-			shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
+	# def make_shrunkseq_xpath_encoded(self):
+	# 	seq_map_xpath = self.get_seq_map_xpath()
+	# 	seq_xpath_encoded = self.get_seq_xpath_encoded()
 
-		self.shrunkseq_xpath_encoded = shrunkseq_xpath_encoded
+	# 	shrunkseq_xpath_encoded = np.zeros(shape=(seq_map_xpath.shape[0], seq_xpath_encoded.shape[1]), dtype=np.int32)
+	# 	for map_xpath in seq_map_xpath:
+	# 		shrunkseq_xpath_encoded[map_xpath[1]] = seq_xpath_encoded[map_xpath[0]]
+
+	# 	self.shrunkseq_xpath_encoded = shrunkseq_xpath_encoded
 		# return shrunkseq_xpath_encoded
 
 	# Getters
@@ -213,54 +235,14 @@ class XpathFinder():
 	def get_uniqseq_xpath_encoded(self):
 		return self.uniqseq_xpath_encoded
 
-	def get_seq_xpath_encoded_sparse(self):
-		return self.seq_xpath_encoded_sparse
+	# def get_seq_xpath_encoded_sparse(self):
+	# 	return self.seq_xpath_encoded_sparse
 	
 	def get_shape_seq_xpath(self):
 		return self.shape_seq_xpath
 
-	def get_seq_map_xpath(self):
-		return self.seq_map_xpath
+	# def get_seq_map_xpath(self):
+	# 	return self.seq_map_xpath
 
-	def get_shrunkseq_xpath_encoded(self):
-		return self.shrunkseq_xpath_encoded
-
-
-
-# Possibly deprecated
-# def get_HTMLdoc(url):
-# 	headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
-	
-# 	req = request.Request(url, headers=headers)
-# 	req = request.urlopen(req)
-	
-# 	charset = req.info().get_content_charset()
-# 	ret = req.read().decode(charset)
-# 	return ret
-
-# def get_list_xpath(doc, tags_ignored, path_prev="", ret=[]):
-# 	list_tmp = []
-# 	# ret.append(path_prev.lstrip("/"))
-# 	for child in doc.children:
-# 		count = list_tmp.count(child.name)
-# 		list_tmp.append(child.name)
-		
-# 		# if isin_irrelevant_tag(child, tags_ignored) == True:
-# 		# 	if count == 0 and child.name in ["p"]:
-# 		# 		# print(path_prev.lstrip("/") + "/"+ child.name + ":{0}".format(count) + "/")
-# 		# 		ret.append(path_prev.lstrip("/") + "/"+ child.name + "/{0}".format(count) + "/")
-# 		if hasattr(child, "children") == True and len(list(child.children)) < 2:			
-# 			ret.append(path_prev.lstrip("/") + "/"+ child.name + "/{0}".format(count) + "/")
-# 		elif hasattr(child, "children") == True:
-# 			get_list_xpath(child, tags_ignored, path_prev + "/"+ child.name + "/{0}".format(count), ret)
-# 	return ret
-
-# def get_range_xpath(seq_xpath):
-# 	"""
-# 	Get the (rendered) maximum depth of xpaths
-# 	"""
-# 	seq_depth = [len(xpath.split("/")) for xpath in seq_xpath]
-# 	depth_max = max(seq_depth)//2
-# 	return depth_max
-
-
+	# def get_shrunkseq_xpath_encoded(self):
+	# 	return self.shrunkseq_xpath_encoded

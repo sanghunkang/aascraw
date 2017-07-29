@@ -32,13 +32,14 @@ print("INITIATED!")
 #############################################################################
 # Generation
 # Simplest
-seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
 seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
+seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
 
-xpathFinder0 = XpathFinder(seq_url[0])
-xpathFinder1 = XpathFinder(seq_url[1])
-xpathFinder2 = XpathFinder(seq_url[2])
-xpathFinder3 = XpathFinder(seq_url[3])
+xpathFinder = XpathFinder()
+pageinfo0 = xpathFinder.extract_pageinfo(seq_url[0])
+pageinfo1 = xpathFinder.extract_pageinfo(seq_url[1])
+pageinfo2 = xpathFinder.extract_pageinfo(seq_url[2])
+pageinfo3 = xpathFinder.extract_pageinfo(seq_url[3])
 
 # If sign-in (+ switching frame) is needed
 # seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
@@ -66,9 +67,9 @@ xpathFinder3 = XpathFinder(seq_url[3])
 #############################################################################
 # Feed Samples
 interInspector = InterInspector()
-interInspector.receive_pageinfo(xpathFinder0)
-interInspector.receive_pageinfo(xpathFinder1)
-interInspector.receive_pageinfo(xpathFinder2)
+interInspector.receive_pageinfo(pageinfo0)
+interInspector.receive_pageinfo(pageinfo1)
+interInspector.receive_pageinfo(pageinfo2)
 # interInspector.receive_pageinfo(xpathFinder3)
 
 interInspector.make_seq_xpath_canddt_inter()
