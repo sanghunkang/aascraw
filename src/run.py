@@ -13,7 +13,8 @@ import numpy as np
 
 # Import custom modules
 from driverController.driver import webdriverTailored
-from driverController.locator import get_attr_elem, locate_element, get_eigentext, get_eigentext_bw
+import driverController.locator as locator
+# from driverController.locator import get_attr_elem, locate_element, get_eigentext, get_eigentext_bw
 from localController.fetcher import fetch_seq_from_file
 
 from interInspector import InterInspector
@@ -21,7 +22,7 @@ from intraInspector import IntraInspector #, get_max_size_window, calculate_max_
 from xpathFinder import XpathFinder
 
 # Import package-wide constants
-import TESTCONFIG
+# import TESTCONFIG
 from constGlobal import *
 
 print("INITIATED!")
@@ -31,13 +32,13 @@ print("INITIATED!")
 #############################################################################
 # Generation
 # Simplest
-seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
 seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
+seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
 
-xpathFinder0 = XpathFinder(seq_url[0], "url")
-xpathFinder1 = XpathFinder(seq_url[1], "url")
-xpathFinder2 = XpathFinder(seq_url[2], "url")
-xpathFinder3 = XpathFinder(seq_url[3], "url")
+xpathFinder0 = XpathFinder(seq_url[0])
+xpathFinder1 = XpathFinder(seq_url[1])
+xpathFinder2 = XpathFinder(seq_url[2])
+xpathFinder3 = XpathFinder(seq_url[3])
 
 # If sign-in (+ switching frame) is needed
 # seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang

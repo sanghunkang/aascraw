@@ -6,7 +6,6 @@ import re
 from urllib import request
 
 # Import external packages
-from bs4 import BeautifulSoup
 import bs4
 import numpy as np
 
@@ -14,36 +13,26 @@ import numpy as np
 # Import package-wide constants
 from constGlobal import *
 
-# def get_HTMLdoc(url):
-# 	headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
+# def encode_xpath(xpath, seq_tagcode, range_xpath):
+# 	xpath_encoded_tagname = np.zeros(shape=(range_xpath), dtype=np.int32)
+# 	xpath_encoded_occurence = np.zeros(shape=(range_xpath), dtype=np.int32)
+# 	seq_elem = xpath.split("/")
 	
-# 	req = request.Request(url, headers=headers)
-# 	req = request.urlopen(req)
-	
-# 	charset = req.info().get_content_charset()
-# 	# self.doc = req.read().decode(charset)
-# 	doc = req.read().decode(charset)
+# 	for i in range(0, len(seq_elem)-1, 2):
+# 		try:
+# 			index = int(i/2)
+# 			xpath_encoded_tagname[index] = SEQ_TAGCODE.index(seq_elem[i])
+# 			xpath_encoded_occurence[index] = int(seq_elem[i+1])
+# 		except ValueError: # Trivial error not so important for now
+# 			pass
 
-# 	soup = BeautifulSoup(doc, "html.parser")
-# 	return soup
+# 	return xpath_encoded_tagname, xpath_encoded_occurence
 
-def encode_xpath(xpath, seq_tagcode, range_xpath):
-	xpath_encoded_tagname = np.zeros(shape=(range_xpath), dtype=np.int32)
-	xpath_encoded_occurence = np.zeros(shape=(range_xpath), dtype=np.int32)
-	seq_elem = xpath.split("/")
-	
-	for i in range(0, len(seq_elem)-1, 2):
-		try:
-			index = int(i/2)
-			xpath_encoded_tagname[index] = SEQ_TAGCODE.index(seq_elem[i])
-			xpath_encoded_occurence[index] = int(seq_elem[i+1])
-		except ValueError: # Trivial error not so important for now
-			pass
-
-	return xpath_encoded_tagname, xpath_encoded_occurence
+class PageInfo():
+	pass
 
 class XpathFinder():
-	def __init__(self, arg, type_arg):
+	def __init__(self, arg):
 		# Caches
 		self.__path_prev = ""
 		self.__stack_path_prev = []
@@ -59,24 +48,40 @@ class XpathFinder():
 		self.seq_map_xpath = []
 
 		# Initial actions upon instantiation
-		if type_arg == "soup": self.receive_soup(arg)
-		elif type_arg == "url": self.receive_url(arg)
+		if isinstance(arg, str): self.receive_url(arg)
+		elif isinstance(arg, bs4.BeautifulSoup): self.receive_soup(arg)
 		
 		self.run_make_seq_xpath()
 
+	def render_soup(self, soup):
+		"""
+		Function to unwrap or remove unnecessary tags, - plus their contents, 
+		most of which are decorative - since decorative tags worsen outputs. 
+		Defaults are chosen emprically. Comments are always removed.
+		
+		args:
+
+		"""
+		seq_text_comment = soup.findAll(text=lambda text:isinstance(text, bs4.Comment))
+		for comment in seq_text_comment: comment.extract()
+
+		seq_tag_unwrap = ["br","span","p","em","img","strong"]
+		seq_tag_decomp = ["a","script","style"]
+		for tag_unwrap in seq_tag_unwrap: [s.unwrap() for s in soup(tag_unwrap)]
+		for tag_decomp in seq_tag_decomp: [s.decompose() for s in soup(tag_decomp)]
+
+		return soup
 	def receive_soup(self, soup):
-		[s.unwrap() for s in soup('br')]
-		[s.unwrap() for s in soup('span')]
-		[s.unwrap() for s in soup('p')]
-		[s.unwrap() for s in soup('em')]
-		[s.unwrap() for s in soup('strong')]
-		[s.decompose() for s in soup('script')]
-		[s.decompose() for s in soup('style')]
-		print(soup)		
+		soup = self.render_soup(soup)
+		print(soup)
 		self.cmd_driver = "cmd control here"
 		self.soup = soup
 
 	def receive_url(self, url):
+		"""
+
+		"""
+		# Please note that some websites don't allow automated scraping.
 		headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
 		
 		req = request.Request(url, headers=headers)
@@ -85,17 +90,8 @@ class XpathFinder():
 		charset = req.info().get_content_charset()
 		doc = req.read().decode(charset)
 
-		soup = BeautifulSoup(doc, "html.parser")
-		[s.unwrap() for s in soup('br')]
-		[s.unwrap() for s in soup('span')]
-		[s.unwrap() for s in soup('p')]
-		[s.unwrap() for s in soup('em')]
-		[s.unwrap() for s in soup('strong')]
-		[s.decompose() for s in soup('script')]
-		[s.decompose() for s in soup('style')]
-		# print(soup)
-		self.soup = soup
-		# return soup
+		soup = bs4.BeautifulSoup(doc, "html.parser")
+		self.receive_soup(soup)
 
 	def run_make_seq_xpath(self):
 		# Becasue make_seq_xpath is a recursive action
@@ -106,6 +102,21 @@ class XpathFinder():
 		self.make_seq_xpath_encoded()
 		self.make_uniqseq_xpath_encoded()
 		self.make_seq_xpath_encoded_sparse()
+
+	def encode_xpath(self, xpath, seq_tagcode, range_xpath):
+		xpath_encoded_tagname = np.zeros(shape=(range_xpath), dtype=np.int32)
+		xpath_encoded_occurence = np.zeros(shape=(range_xpath), dtype=np.int32)
+		seq_elem = xpath.split("/")
+		
+		for i in range(0, len(seq_elem)-1, 2):
+			try:
+				index = int(i/2)
+				xpath_encoded_tagname[index] = SEQ_TAGCODE.index(seq_elem[i])
+				xpath_encoded_occurence[index] = int(seq_elem[i+1])
+			except ValueError: # Trivial error not so important for now
+				pass
+
+		return xpath_encoded_tagname, xpath_encoded_occurence
 	
 	def make_seq_xpath(self, elem):
 		list_tmp = []
@@ -124,7 +135,7 @@ class XpathFinder():
 				self.seq_xpath.append(self.__path_prev.lstrip("/")) # + str(child.name) + "/{0}".format(count) + "/")
 
 	def filter_seq_xpath(self):
-		# Set operation doesn't preserve the order
+		# Note: Set operation doesn't preserve the order
 		seq_xpath_filtered = []
 		for xpath in self.seq_xpath:
 			if xpath not in seq_xpath_filtered and len(xpath) > 1:
@@ -142,8 +153,8 @@ class XpathFinder():
 		self.seq_xpath_encoded_occurence = np.zeros(shape=shape, dtype=np.int32)
 		
 		for i, xpath in enumerate(self.seq_xpath):
-			self.seq_xpath_encoded[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[0]
-			self.seq_xpath_encoded_occurence[i] = encode_xpath(xpath, SEQ_TAGCODE, shape[1])[1]
+			self.seq_xpath_encoded[i] = self.encode_xpath(xpath, SEQ_TAGCODE, shape[1])[0]
+			self.seq_xpath_encoded_occurence[i] = self.encode_xpath(xpath, SEQ_TAGCODE, shape[1])[1]
 
 	def make_uniqseq_xpath_encoded(self):
 		seq_xpath_encoded = self.get_seq_xpath_encoded()
