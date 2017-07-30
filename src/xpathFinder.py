@@ -78,7 +78,7 @@ class XpathFinder():
 		if isinstance(arg, str): soup = self.receive_url(arg)
 		else: soup = self.receive_soup(arg)
 		
-		print(soup)
+		# print(soup)
 		return soup
 
 	def encode_xpath(self, xpath, seq_tagcode, range_xpath):
