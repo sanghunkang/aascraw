@@ -8,8 +8,7 @@ from functools import reduce
 import numpy as np
 
 # Import custom modules
-# from driverController.locator import get_attr_elem, locate_element, get_eigentext
-from driverController.locator import Locator
+from .locator import Locator
 
 # Import package-wide constants
 from constGlobal import *

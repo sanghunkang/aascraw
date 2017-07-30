@@ -11,12 +11,11 @@ from bs4 import BeautifulSoup
 import numpy as np
 
 # Import custom modules
-from driverController.driver import WebdriverTailored
-from driverController.locator import Locator
-from localController.fetcher import fetch_seq_from_file
-from interInspector import InterInspector
-from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
+from controller import WebdriverTailored, LocalController#fetch_seq_from_file
+from inspector import InterInspector, IntraInspector, Locator
 from xpathFinder import XpathFinder
+#, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
+
 
 # Import package-wide constants
 # import TESTCONFIG
@@ -29,8 +28,10 @@ print("INITIATED!")
 #############################################################################
 # Generation
 # Simplest
-seq_url = fetch_seq_from_file("../data/seq_url_news.csv") # News
-seq_url = fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
+
+localController = LocalController()
+seq_url = localController.fetch_seq_from_file("../data/seq_url_news.csv") # News
+seq_url = localController.fetch_seq_from_file("../data/seq_url_movies.csv") # Movies
 
 xpathFinder = XpathFinder()
 pageinfo0 = xpathFinder.extract_pageinfo(seq_url[0])
