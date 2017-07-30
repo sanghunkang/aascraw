@@ -14,14 +14,11 @@ from driverController.locator import Locator
 # Import package-wide constants
 from constGlobal import *
 
-class InterInspector(Locator):
+class InterInspector():
 	def __init__(self):
 		self.seq_pageinfo = []
 		self.intersect_xpath_encoded = []
 	
-	def receive_pageinfo(self, pageinfo):
-		self.seq_pageinfo.append(pageinfo)
-
 	# def calculate_shape_intersect(self, seq_pageinfo):
 	# 	nrows = min([pageinfo.get_uniqseq_xpath_encoded().shape[0] for pageinfo in seq_pageinfo])
 	# 	ncols = min([pageinfo.get_uniqseq_xpath_encoded().shape[1] for pageinfo in seq_pageinfo])
@@ -49,6 +46,9 @@ class InterInspector(Locator):
 		
 	# 	self.intersect_xpath_encoded = intersect_xpath_encoded
 
+	def receive_pageinfo(self, pageinfo):
+		self.seq_pageinfo.append(pageinfo)
+
 	def generate_seq_seq_xpath(self, seq_pageinfo):
 		seq_seq_xpath = [pageinfo.get_seq_xpath() for pageinfo in seq_pageinfo]
 		return seq_seq_xpath
@@ -60,30 +60,33 @@ class InterInspector(Locator):
 		intersect_xpath.sort(key=seq_seq_xpath[0].index)
 		return intersect_xpath
 
-	def make_seq_xpath_canddt_inter(self):
+	# def generate_seq_locator(self, seq_pageinfo):
+	# 	seq_locator = [Locator(pageinfo) for pageinfo in seq_pageinfo]
+	# 	return seq_locator
+
+	def generate_seq_eigentext(self, xpath, seq_pageinfo):
+		seq_elem_located = [locate_element(pageinfo.get_soup(), xpath, get_attr_elem)[-1] for pageinfo in seq_pageinfo]
+		seq_eigentext = [get_eigentext(elem_located) for elem_located in seq_elem_located]
+		return seq_eigentext
+
+	def generate_seq_xpath_canddt_inter(self):
 		seq_pageinfo = self.get_seq_pageinfo()
 		intersect_xpath = self.generate_intersect_xpath(seq_pageinfo)
+		# seq_locator = self.generate_seq_locator(seq_pageinfo)
 
 		seq_xpath_canddt_inter = []
 		for i, xpath in enumerate(intersect_xpath):
-			seq_elem_located = [locate_element(pageinfo.get_soup(), xpath, get_attr_elem)[-1] for pageinfo in seq_pageinfo]
-			seq_eigentext = [self.get_eigentext(elem_located) for elem_located in seq_elem_located]
-			seq_eigentext.sort()
-			
-			has_diff = False
-			for j in range(len(seq_eigentext)-1):
-				if seq_eigentext[j] != seq_eigentext[j+1]: has_diff = True
+			seq_eigentext = self.generate_seq_eigentext(xpath, seq_pageinfo)
 
 			print(i, "###########################################################################")
 			print(xpath)
-			if has_diff == True:
+			if len(set(seq_eigentext)) > 1: # If any difference among the seq is found
 				seq_xpath_canddt_inter.append(xpath)
 				for eigentext in seq_eigentext:
 					print(eigentext)
 					print("_______________________________________________________________")
 
-		self.seq_xpath_canddt_inter = seq_xpath_canddt_inter
-		# return seq_xpath_canddt_inter
+		return seq_xpath_canddt_inter
 
 	# Getters ... well defined
 	def get_seq_pageinfo(self):

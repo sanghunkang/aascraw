@@ -64,6 +64,9 @@ def get_eigentext_bw(elem):
 	return str_stripped
 
 class Locator():
+	def __init__(self, pageinfo):
+		self.pageinfo = pageinfo
+
 	def get_children_direct(self, elem, tag_of_interest=None): # afraid of breaking this :()
 		try:
 			children_1st = elem.findChildren()[0]

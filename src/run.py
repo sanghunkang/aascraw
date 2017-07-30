@@ -48,27 +48,30 @@ interInspector.receive_pageinfo(pageinfo1)
 interInspector.receive_pageinfo(pageinfo2)
 # interInspector.receive_pageinfo(xpathFinder3)
 
-interInspector.make_seq_xpath_canddt_inter()
-seq_xpath_canddt_inter = interInspector.get_seq_xpath_canddt_inter()
+seq_xpath_canddt_inter = interInspector.generate_seq_xpath_canddt_inter()
+# seq_xpath_canddt_inter = interInspector.get_seq_xpath_canddt_inter()
 
 #############################################################################
 # Testing
+print("+++++ TESTING +++++")
+print("+++++ TESTING +++++")
+print("+++++ TESTING +++++")
 
-# soup2 = xpathFinder2.get_soup()
-# soup3 = xpathFinder3.get_soup()
-# for xpath in seq_xpath_canddt_inter:
-# 	try:
-# 		print(xpath)
-# 		elems_located_test2 = locate_element(soup2, xpath, get_attr_elem)[-1]
-# 		eigentext_test2 = get_eigentext(elems_located_test2)
-# 		print(eigentext_test2)
+soup2 = pageinfo3.get_soup()
+soup3 = pageinfo3.get_soup()
+for xpath in seq_xpath_canddt_inter:
+	try:
+		print(xpath)
+		elems_located_test2 = locator.locate_element(soup2, xpath, locator.get_attr_elem)[-1]
+		eigentext_test2 = locator.get_eigentext(elems_located_test2)
+		print(eigentext_test2)
 
-# 		elems_located_test3 = locate_element(soup3, xpath, get_attr_elem)[-1]
-# 		eigentext_test3 = get_eigentext(elems_located_test3)
-# 		print(eigentext_test3)
-# 	except IndexError:
-# 		print(IndexError)
-# 	# print("#############################################################################")
+		elems_located_test3 = locator.locate_element(soup3, xpath, locator.get_attr_elem)[-1]
+		eigentext_test3 = locator.get_eigentext(elems_located_test3)
+		print(eigentext_test3)
+	except IndexError:
+		print(IndexError)
+	# print("#############################################################################")
 
 
 # If sign-in (+ switching frame) is needed
