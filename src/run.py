@@ -8,14 +8,12 @@ from urllib import request
 
 # Import external packages
 from bs4 import BeautifulSoup
-# import matplotlib.pyplot as plt
 import numpy as np
 
 # Import custom modules
-from driverController.driver import webdriverTailored
-import driverController.locator as locator
+from driverController.driver import WebdriverTailored
+from driverController.locator import Locator
 from localController.fetcher import fetch_seq_from_file
-
 from interInspector import InterInspector
 from intraInspector import IntraInspector #, get_max_size_window, calculate_max_index_start, make_tsr_slice, get_seq_index_canddt, update_seq_index_canddt, calculate_dist_tsr
 from xpathFinder import XpathFinder
@@ -45,11 +43,9 @@ pageinfo3 = xpathFinder.extract_pageinfo(seq_url[3])
 interInspector = InterInspector()
 interInspector.receive_pageinfo(pageinfo0)
 interInspector.receive_pageinfo(pageinfo1)
-interInspector.receive_pageinfo(pageinfo2)
-# interInspector.receive_pageinfo(xpathFinder3)
+# interInspector.receive_pageinfo(pageinfo2)
 
 seq_xpath_canddt_inter = interInspector.generate_seq_xpath_canddt_inter()
-# seq_xpath_canddt_inter = interInspector.get_seq_xpath_canddt_inter()
 
 #############################################################################
 # Testing
@@ -57,27 +53,27 @@ print("+++++ TESTING +++++")
 print("+++++ TESTING +++++")
 print("+++++ TESTING +++++")
 
-soup2 = pageinfo3.get_soup()
-soup3 = pageinfo3.get_soup()
-for xpath in seq_xpath_canddt_inter:
+locator2 = Locator(pageinfo2)
+locator3 = Locator(pageinfo3)
+for i, xpath in enumerate(seq_xpath_canddt_inter):
+	print(i, "###########################################################################\n" + xpath)
 	try:
 		print(xpath)
-		elems_located_test2 = locator.locate_element(soup2, xpath, locator.get_attr_elem)[-1]
-		eigentext_test2 = locator.get_eigentext(elems_located_test2)
+		eigentext_test2 = locator2.generate_eigentext(xpath)
+		# eigentext_test3 = locator3.generate_eigentext(xpath)
 		print(eigentext_test2)
-
-		elems_located_test3 = locator.locate_element(soup3, xpath, locator.get_attr_elem)[-1]
-		eigentext_test3 = locator.get_eigentext(elems_located_test3)
-		print(eigentext_test3)
+		print("_______________________________________________________________")
+		# print(eigentext_test3)
 	except IndexError:
 		print(IndexError)
-	# print("#############################################################################")
+	except TypeError:
+		print(TypeError)
 
 
 # If sign-in (+ switching frame) is needed
 # seq_url = fetch_seq_from_file("../data/seq_url_eurang.csv") # Eurang
 
-# driver = webdriverTailored("..\\drivers\\chromedriver.exe")
+# driver = WebdriverTailored("..\\drivers\\chromedriver.exe")
 # driver.get("https://nid.naver.com/nidlogin.login")
 # driver.send_info_signin(TESTCONFIG.USER_ID, TESTCONFIG.USER_PW)
 

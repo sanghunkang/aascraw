@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 ClassDriver = webdriver.PhantomJS
 ClassDriver = webdriver.Chrome
 
-class webdriverTailored(ClassDriver):
+class WebdriverTailored(ClassDriver):
 	def __init__(self, path_driver):
 		ClassDriver.__init__(self, path_driver)
 
