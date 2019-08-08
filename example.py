@@ -1,34 +1,36 @@
-from aascraw import Master, Slave, Storage
+from aascraw import Deliverer, Filterer, Storage
 
-master = Master() 
-slave = Slave()
+
+
+deliverer = Deliverer() 
+filterer = Filterer()
 storage = Storage()
 
-rank_delta = None
+rank_delta_deliverer = []
+rank_delta_filterer = []
 
 # Exploration step
-for i in range(100):
-    master.proceed()
-    master.update_action_space() #
-    master.update_policy(rank_delta_slave) #
-    task = master.give_task()
+for i in range(1):
+    deliverer.proceed()
+    deliverer.update_action_space() #
+    deliverer.update_policy(rank_delta_deliverer) #
+    task = deliverer.give_task()
     
-    slave.load_task(task)
-    slave.update_action_space() #
-    slave.update_policy(rank_delta) #
-    data = slave.run_task()
+    filterer.load_task(task)                   # 
+    filterer.update_action_space()             #
+    filterer.update_policy(rank_delta_filterer)         #
+    data = filterer.run_task()
 
     storage.ingest(data)
     storage.evaluate_data()
-    rank_delta_master = storage.get_rank_delta_master()
-    rank_delta_slave = storage.get_rank_delta_slave()
+    rank_delta_deliverer, rank_delta_filterer = storage.get_rank_delta()
     
 # Exploitation step
 for i in range(100):
-    master.proceed()            # move on to the next page
-    task = master.give_task()   
+    deliverer.proceed()            # move on to the next page
+    task = deliverer.give_task()   
     
-    slave.load_task(task)
-    data = slave.run_task()     # locate elements which contain desired information 
+    filterer.load_task(task)
+    data = filterer.run_task()     # locate elements which contain desired information 
 
     storage.ingest(data)        # save the data at located elements
