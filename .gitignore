@@ -5,6 +5,7 @@ src/TESTCONFIG.py
 *.txt
 
 */__pycache__/
+**.vscode
 
 **venv
 
