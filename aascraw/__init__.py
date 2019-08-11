@@ -6,7 +6,30 @@ from lxml import html
 from io import StringIO
 
 
+def build_xpath(prefix, tag):
+    xpath = f"{prefix}/{tag}"
+    return xpath
 
+def find_all_xpaths(preceding_xpath, element):
+    xpaths = [build_xpath(preceding_xpath, element.tag)]
+    children = element.getchildren()
+    # print(build_xpath(preceding_xpath, element.tag))
+
+    if len(children) > 0:
+        for child in children:
+            xpaths =  xpaths + find_all_xpaths(build_xpath(preceding_xpath, element.tag), child)
+    return xpaths
+
+    # elements = element.find_elements_by_xpath("./*")
+    
+    # if len(elements) == 0:
+    #     return [f"{preceding_xpath}-{element.tag_name}"]
+    # else:
+    #     event_listeners = []
+    #     for element in elements:
+    #         print(f"{preceding_xpath}-{element.tag_name}")
+    #         event_listeners =  event_listeners + find_all_event_listeners(f"{preceding_xpath}-{element.tag_name}", element)
+    #     return event_listeners
 
 
 class Filterer():
@@ -14,6 +37,7 @@ class Filterer():
         super().__init__()
 
         self.new_action_default_rank = 0
+        self.sum_rank = 0
         self.actions = {
             #XPath to locate an element, rank
         }
@@ -44,9 +68,22 @@ class Filterer():
         # >>> broken_html = "<html><head><title>test<body><h1>page title</h3>"
         tree = html.fromstring(self.page)
         # <Element html at 0x2dde650>
-        r = tree.xpath('/div')
-        print(r)
-        len(r)
+        self.actions = find_all_xpaths("", tree)
+        print(dir(tree))
+
+
+        for action in self.actions:
+            try:
+                print(action)
+                text = tree.xpath(action)
+                print(text)
+            except etree.XPathEvalError:
+                print("Invalid xpath")
+
+        # print(tree.getchildren())
+        # r = tree.xpath('/div')
+        # print(r)
+        # len(r)
 
 
     def update_policy(self, rank_deltas):

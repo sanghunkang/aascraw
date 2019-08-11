@@ -1,5 +1,10 @@
 from selenium import webdriver
-
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+#chrome_options.add_argument("--disable-extensions")
+#chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--headless")
+# driver = webdriver.Chrome()
 
 
 
@@ -76,7 +81,8 @@ class Deliverer():
             #"GET_PARAM::operator>param" : 10,
             #"HREF::https://naver.com/?some=get&query=params" : 15
         }
-        self.driver = webdriver.Chrome("./chromedriver")
+        # self.driver = webdriver.Chrome("./drivers/chromedriver", chrome_options=chrome_options)
+        self.driver = webdriver.PhantomJS("./drivers/phantomjs")
         # self.driver.get(entry_point)
         # self.page = self.driver.find_element_by_xpath("html") # OTHER WAY TO FIND ROOT NODE
 

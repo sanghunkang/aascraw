@@ -32,7 +32,7 @@ for i in range(1):
     # deliverer.update_action_space() #
     # filterer.update_policy(rank_delta_filterer)         #
     
-deliverer.driver.close()
+# deliverer.driver.close()
 
 # Exploitation step
 # for i in range(100):

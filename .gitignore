@@ -1,12 +1,12 @@
-src/TESTCONFIG.py
+**/.DS_Store
+**/__pycache__
 
-*.log
-*.pyc
-*.txt
+ghostdriver.log
 
-*/__pycache__/
+**drivers
 **.vscode
-
 **venv
+
+
 
 chromedriver
