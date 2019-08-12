@@ -109,12 +109,14 @@ class Deliverer():
         elif action_type == "GET_PARAM":
             self.url = format_url(self.url, action)
             self.driver.get(self.url)
-        # elif action_type == "EVENT":
-        #     xpath = format_xpath(action)
-        #     trigger = format_trigger(action)
-        #     self.driver.find_element_by_xpath(xpath).execute(trigger)
 
+            # elif action_type == "EVENT":
+            #     xpath = format_xpath(action)
+            #     trigger = format_trigger(action)
+            #     self.driver.find_element_by_xpath(xpath).execute(trigger)
+            
         self.page = self.driver.find_element_by_xpath("html") # OTHER WAY TO FIND ROOT NODE
+        return action_type + action
 
     def get_page(self):
         # Trigger event or send request to the server

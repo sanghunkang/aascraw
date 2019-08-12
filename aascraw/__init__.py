@@ -6,30 +6,36 @@ from lxml import html
 from io import StringIO
 
 
-def build_xpath(prefix, tag):
-    xpath = f"{prefix}/{tag}"
+def build_xpath(prefix, element, child_index):
+    # tag_name = element.tag
+    selector = f"[{child_index}]"
+    for attrib_name, attrib_value in element.attrib.items():
+        selector = selector + f"[@{attrib_name}='{attrib_value}']"
+
+    xpath = f"{prefix}/{element.tag}{selector}"
+    
+    # print(elements[0].attrib)
     return xpath
 
-def find_all_xpaths(preceding_xpath, element):
-    xpaths = [build_xpath(preceding_xpath, element.tag)]
+def update_prev_tag_counts(tag_name, prev_tag_counts):
+    if tag_name in prev_tag_counts:
+        prev_tag_counts[tag_name] += 1
+    else:
+        prev_tag_counts[tag_name] = 1
+    return prev_tag_counts
+
+def find_all_xpaths(preceding_xpath, element, child_index):
+    prefix_xpath = build_xpath(preceding_xpath, element, child_index)
+    xpaths = [prefix_xpath]
     children = element.getchildren()
-    # print(build_xpath(preceding_xpath, element.tag))
 
     if len(children) > 0:
+        prev_tag_counts = {}
         for child in children:
-            xpaths =  xpaths + find_all_xpaths(build_xpath(preceding_xpath, element.tag), child)
+            prev_tag_counts = update_prev_tag_counts(child.tag, prev_tag_counts)
+            # prefix_xpath =  prefix_xpath #build_xpath(preceding_xpath, element.tag, i+1)
+            xpaths =  xpaths + find_all_xpaths(prefix_xpath, child, prev_tag_counts[child.tag])
     return xpaths
-
-    # elements = element.find_elements_by_xpath("./*")
-    
-    # if len(elements) == 0:
-    #     return [f"{preceding_xpath}-{element.tag_name}"]
-    # else:
-    #     event_listeners = []
-    #     for element in elements:
-    #         print(f"{preceding_xpath}-{element.tag_name}")
-    #         event_listeners =  event_listeners + find_all_event_listeners(f"{preceding_xpath}-{element.tag_name}", element)
-    #     return event_listeners
 
 
 class Filterer():
@@ -39,51 +45,43 @@ class Filterer():
         self.new_action_default_rank = 0
         self.sum_rank = 0
         self.actions = {
-            #XPath to locate an element, rank
+            #XPath to locate an element: rank
         }
 
-    def load_page(self, page):
+    def __sample_action(self):
+        return self.actions.keys()
+
+    def load_page(self, action_taken, page):
+        self.deliverer_action = action_taken
         self.page = page
-    
+        self.tree = html.fromstring(self.page)
 
     def run_page(self):
         # Locate element
-
-        return
-    
-
-
-    def update_action_space(self):
-        print("This function will look for selector sequences")
-        # print(self.page)
-        # for xpath in find_all_xpaths(self.page):
-        #     if xpath not in self.actions:
-        #         self.actions[xpath] = self.new_action_default_rank
-
-        # f = StringIO('<foo><bar></bar></foo>')
-        # f = StringIO(self.page)
-        # tree = etree.parse(f)
-
-
-        # >>> broken_html = "<html><head><title>test<body><h1>page title</h3>"
-        tree = html.fromstring(self.page)
-        # <Element html at 0x2dde650>
-        self.actions = find_all_xpaths("", tree)
-        print(dir(tree))
-
-
-        for action in self.actions:
+        actions_to_execute = self.__sample_action()
+        results = []
+        for action_to_execute in actions_to_execute:
             try:
-                print(action)
-                text = tree.xpath(action)
-                print(text)
+                elements = self.tree.xpath(action_to_execute)
+                print(action_to_execute)
+                print(elements[0].attrib)
+                content = etree.tostring(elements[0], pretty_print=True, encoding="UTF-8").decode("utf-8")
+                results.append([self.deliverer_action, action_to_execute, content])
+                print(content)
             except etree.XPathEvalError:
                 print("Invalid xpath")
+        return results
+    
+    def update_action_space(self):
+        print("This function will look for selector sequences")
 
-        # print(tree.getchildren())
-        # r = tree.xpath('/div')
-        # print(r)
-        # len(r)
+        xpaths = find_all_xpaths("", self.tree, 1)
+        for xpath in xpaths:
+            if xpath not in self.actions:
+                self.actions[xpath] = self.new_action_default_rank
+        
+        
+        
 
 
     def update_policy(self, rank_deltas):
@@ -103,21 +101,35 @@ class Filterer():
 
 class Storage():
     def __init__(self):
+        self.kernels = []
         self.task_log = [
             # action_master, action_slave, consistent_features, variant_features, rank_delta
-        ] 
-
-    def ingest(self, result):
-        # This function saves newly collected result
-        pass
-
-    def evaluate_data(self):
-        # This function evaluates objective functions
         
-        # calculate_contrib_to_consistency
-        # caclulate_contrib_to_variety
-        pass
+            ]
+        self.results = [] 
+        # action_master, action_slave, consistent_features, variant_features, rank_delta
 
+    def __calculate_rank(self, text):
+        rank = 0
+        for kernel in self.kernels:
+            rank += kernel(text)
+        return rank
+
+    def add_kernel(self, kernel):
+        if False: # SAFETY CHECK FOR KERNEL FUNCTION
+            raise Exception
+        else:
+            self.kernels.append(kernel)
+        
+
+    def ingest(self, results):
+        # Evaluate rank
+        for result in results:
+            # calculate_contrib_to_consistency
+            # caclulate_contrib_to_variety
+            rank = self.__calculate_rank(result[2])
+            self.results.append(result + [rank])    
+        
     def get_rank_delta(self):
         # [action_master, rank_delta]
         return [], []

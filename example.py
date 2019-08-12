@@ -12,18 +12,18 @@ rank_delta_filterer = []
 # Exploration step
 for i in range(1):
     # Action for agent 1
-    deliverer.proceed()
+    action_taken = deliverer.proceed()
     page = deliverer.get_page()
     
 
     
     # Action for agent 2
-    filterer.load_page(page)                   # 
+    filterer.load_page(action_taken, page)                   # 
     filterer.update_action_space()             #
-    # data = filterer.run_page()
+    data = filterer.run_page()
 
     # # Calculate reward
-    # storage.ingest(data)
+    storage.ingest(data)
     # storage.evaluate_data()
     
     # # Update policy

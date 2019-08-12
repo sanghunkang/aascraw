@@ -4,6 +4,10 @@ Aascraw is automated-automated web crawler/scrper library. That is, you can coll
 
 
 
+
+
+
+
 But I want something more "realistic" than  . You know   sometimes raises errors. All of them are too trivial that making noble people smart and educated like you to spend time handling it will be a waste of time.
 
 
