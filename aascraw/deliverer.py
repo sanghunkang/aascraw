@@ -6,6 +6,14 @@ chrome_options = Options()
 chrome_options.add_argument("--headless")
 # driver = webdriver.Chrome()
 
+# Step 1.
+# - action to move on to the next page
+#     at the very first execution of the iteration, it is the entry URL
+#     then, it will be triggered by various actions. e.g. inputting URL with different get query, clicking some button on a page. In any case, it will be sending request to server and receiving response back and working with it.
+
+#     The search space for next action will be determined by 
+#     How taskgiver selects action will be discussed later.
+
 
 
 def find_all_event_listeners(preceding_xpath, element):

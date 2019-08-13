@@ -2,9 +2,21 @@ from aascraw import Deliverer, Filterer, Storage
 
 TEST_URL = "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=025&aid=0002928205"
 
+
+# - initial setup
+#     - 
+#         - crawled data. maybe I will insert it directly to database
+#         - xpaths sorted by ran
+
+#define desired schema for collected data. 
+sample_data= [("some moderately long text about something", "someones name", "year-month-date", "XXXXX")]
+
+# define storage variables and insert the sample to the storage
+storage = Storage()
+storage.add_sample_data(sample_data, real_data = False)
+
 deliverer = Deliverer(TEST_URL) 
 filterer = Filterer()
-storage = Storage()
 
 rank_delta_deliverer = []
 rank_delta_filterer = []
@@ -15,11 +27,9 @@ for i in range(1):
     action_taken = deliverer.proceed()
     page = deliverer.get_page()
     
-
-    
     # Action for agent 2
-    filterer.load_page(action_taken, page)                   # 
-    filterer.update_action_space()             #
+    filterer.load_page(action_taken, page)              
+    filterer.update_action_space()             
     data = filterer.run_page()
 
     # # Calculate reward
@@ -35,6 +45,8 @@ for i in range(1):
 # deliverer.driver.close()
 
 # Exploitation step
+# ... or after sufficient amount of exploration, we compile state-acion matrix into a procedural codes and execute exploitation.
+
 # for i in range(100):
 #     deliverer.proceed()            # move on to the next page
 #     task = deliverer.give_task()   

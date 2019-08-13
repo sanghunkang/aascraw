@@ -7,15 +7,10 @@ from io import StringIO
 
 
 def build_xpath(prefix, element, child_index):
-    # tag_name = element.tag
     selector = f"[{child_index}]"
     for attrib_name, attrib_value in element.attrib.items():
         selector = selector + f"[@{attrib_name}='{attrib_value}']"
-
-    xpath = f"{prefix}/{element.tag}{selector}"
-    
-    # print(elements[0].attrib)
-    return xpath
+    return f"{prefix}/{element.tag}{selector}"
 
 def update_prev_tag_counts(tag_name, prev_tag_counts):
     if tag_name in prev_tag_counts:
@@ -33,7 +28,6 @@ def find_all_xpaths(preceding_xpath, element, child_index):
         prev_tag_counts = {}
         for child in children:
             prev_tag_counts = update_prev_tag_counts(child.tag, prev_tag_counts)
-            # prefix_xpath =  prefix_xpath #build_xpath(preceding_xpath, element.tag, i+1)
             xpaths =  xpaths + find_all_xpaths(prefix_xpath, child, prev_tag_counts[child.tag])
     return xpaths
 
@@ -47,6 +41,9 @@ class Filterer():
         self.actions = {
             #XPath to locate an element: rank
         }
+
+    def __sort_actions(self):
+        pass
 
     def __sample_action(self):
         return self.actions.keys()
@@ -99,13 +96,13 @@ class Filterer():
 
     
 
+#     reinforcement
+#         objective = minimise structure variance and maximise contents variance
+#             minimise structure variance
+#             if addition to the community spoils the structure more than the tolerance level, we reject it.
 class Storage():
     def __init__(self):
         self.kernels = []
-        self.task_log = [
-            # action_master, action_slave, consistent_features, variant_features, rank_delta
-        
-            ]
         self.results = [] 
         # action_master, action_slave, consistent_features, variant_features, rank_delta
 
@@ -113,6 +110,14 @@ class Storage():
         rank = 0
         for kernel in self.kernels:
             rank += kernel(text)
+        #             a set of elements
+
+        # if a con
+        #   coeff*xpath + coeff*tag_types + coeff*classes + coeff*id
+        # -> this is to ensure that a coe
+
+        # in an agent - state fashion
+
         return rank
 
     def add_kernel(self, kernel):

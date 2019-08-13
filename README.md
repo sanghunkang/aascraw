@@ -42,85 +42,37 @@ we can expect if container-side attributes are similar and content-side attribut
 
 The model:
 
-a set of elements
-
-if a con
-
-
-  coeff*xpath + coeff*tag_types + coeff*classes + coeff*id
--> this is to ensure that a coe
-
-
-in an agent - state fashion
 
 
 
 
 
-
+# How it works? 
 The Taskgiver
 State1      : That we are looking at some webpage
 Action1     : Change the webpage we are looking at
-Reward      : USE THE SAME REWARD?
 
 The Taskhandler
 State2      : Our consistency and variety of data community
 Action2     : Decide to include/exclude new datapoint into the community
+
 Reward      : consistency in structure, variance in contents
 
-# Step 0.
-- initial setup
-    - define desired schema for collected data. 
-    - define storage variables
-        - crawled data. maybe I will insert it directly to database
-        - xpaths sorted by rank
 
-# Step 1.
-- action to move on to the next page
-    at the very first execution of the iteration, it is the entry URL
-    then, it will be triggered by various actions. e.g. inputting URL with different get query, clicking some button on a page. In any case, it will be sending request to server and receiving response back and working with it.
-
-    The search space for next action will be determined by 
-    How taskgiver selects action will be discussed later.
 
 # Step 2 for requirement 1
 Rank based - reinforcement algorithm
-- collect a data get by xpath(s) with highest rank and compare
-    structure remains same and contents are variant: there is a high probability this is what we wanted. We increase the rank of this key
-    otherwise: we deem it as uninteresting. We decrease the rank of this key.
-    (어떤 element를 찾았는데, 이것이 맞으면 수집을 하고, 맞지 않으면 무시한다.)
 
-    How xpath rank is calculated will be discussed later.
-
-    reinforcement
-        objective = minimise structure variance and maximise contents variance
-            minimise structure variance
-                if addition to the community spoils the structure more than the tolerance level, we reject it.
 
 
 # Step2 for requirement 2
 Add rank to selected actions
 
 
-# Step 3
-After sufficient amount of exploration, we compile state-acion matrix into a procedural codes and execute exploitation.
 
 
-# how xpath rank is calculated?
-A desired property that
 
-A function to find xpath rank is defined accordingly.
 
-- features which contributes to consistency of format
-    tag types   ~ 100, consider all. there are
-    attributes  ~ 200, for now, concentrate in most common 5
-    content types ~ ?
-
-    distance between x2v 
-    if within average (+ some buffer) distance -> include to the board
-    else reject
-
-- features which contributes to variance of contents
     
 
 # How Taskgiver selects actions?
@@ -128,9 +80,18 @@ Unlike evaluating the reward for xpath, which can be calculated by itself, taskg
 
 we have to check that our transition policy can bring us 
 
+# Kernels
+Kernels are python funtions . It can be simply as counting the length of a string, or as complicated as 
 
 
 
+
+# Versioning Guide
+The versions of the library follows MAJOR.MINOR.PATCH scheme. Specfically:
+
+- PATCH - for optimisations and bug-fixes
+- MINOR - for changes that affect user interfaces, i.e. public methods, new features.
+- MAJOR - no plan yet.
 
 
 
