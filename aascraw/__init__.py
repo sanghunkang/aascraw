@@ -1,4 +1,5 @@
 from .deliverer import Deliverer
+from .storage import Storage
 
 from lxml import etree
 from lxml import html
@@ -96,48 +97,7 @@ class Filterer():
 
     
 
-#     reinforcement
-#         objective = minimise structure variance and maximise contents variance
-#             minimise structure variance
-#             if addition to the community spoils the structure more than the tolerance level, we reject it.
-class Storage():
-    def __init__(self):
-        self.kernels = []
-        self.results = [] 
-        # action_master, action_slave, consistent_features, variant_features, rank_delta
 
-    def __calculate_rank(self, text):
-        rank = 0
-        for kernel in self.kernels:
-            rank += kernel(text)
-        #             a set of elements
-
-        # if a con
-        #   coeff*xpath + coeff*tag_types + coeff*classes + coeff*id
-        # -> this is to ensure that a coe
-
-        # in an agent - state fashion
-
-        return rank
-
-    def add_kernel(self, kernel):
-        if False: # SAFETY CHECK FOR KERNEL FUNCTION
-            raise Exception
-        else:
-            self.kernels.append(kernel)
-        
-
-    def ingest(self, results):
-        # Evaluate rank
-        for result in results:
-            # calculate_contrib_to_consistency
-            # caclulate_contrib_to_variety
-            rank = self.__calculate_rank(result[2])
-            self.results.append(result + [rank])    
-        
-    def get_rank_delta(self):
-        # [action_master, rank_delta]
-        return [], []
 
 
 

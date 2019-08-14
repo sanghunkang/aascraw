@@ -1,4 +1,5 @@
 from aascraw import Deliverer, Filterer, Storage
+import kernels
 
 TEST_URL = "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=025&aid=0002928205"
 
@@ -14,6 +15,8 @@ sample_data= [("some moderately long text about something", "someones name", "ye
 # define storage variables and insert the sample to the storage
 storage = Storage()
 storage.add_sample_data(sample_data, real_data = False)
+storage.add_kernel(kernels.rank_tuple_consistency)
+storage.add_kernel(kernels.rank_content_variance)
 
 deliverer = Deliverer(TEST_URL) 
 filterer = Filterer()
@@ -32,9 +35,8 @@ for i in range(1):
     filterer.update_action_space()             
     data = filterer.run_page()
 
-    # # Calculate reward
-    storage.ingest(data)
-    # storage.evaluate_data()
+    # Calculate reward
+    storage.evaluate_results(data)
     
     # # Update policy
     # rank_delta_deliverer, rank_delta_filterer = storage.get_rank_delta()
