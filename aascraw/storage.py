@@ -2,47 +2,85 @@
 #         objective = minimise structure variance and maximise contents variance
 #             minimise structure variance
 #             if addition to the community spoils the structure more than the tolerance level, we reject it.
+
+
+
+import numpy as np
+
+# The goal of Storage class is to give rewards to Deliver and Filterer so that they can optimise the selection of
+# of xpaths.
+
 class Storage():
-    def __init__(self):
-        self.kernels = []
+    def __init__(self, schema_length, consistency_embedding_length):        
         self.records = [] 
-        # action_master, action_slave, consistent_features, variant_features, rank_delta
+        # [action_deliverer, action_filterer, crawled data, index, rank_delta]
 
-    def __calculate_rank(self, text):
-        rank = 0
-        for kernel in self.kernels:
-            rank += kernel(text)
-        #             a set of elements
+        self.element_kernels = []
+        self.tuple_kernels = []
+        
+        self.__schema_length = schema_length
+        self.__consistency_embedding_length = consistency_embedding_length
+        self.count = 1
 
-        # if a con
-        #   coeff*xpath + coeff*tag_types + coeff*classes + coeff*id
-        # -> this is to ensure that a coe
+    def __calculate_rank(self, record):
+        elementwise_rank = np.zeros(self.__schema_length)
+        existing_records = self.__sample_existing_records()
+                
+        # Calculate rank based on each element
+        for kernel, element_id in self.element_kernels:
+            # NOTE MULTIPLY WEIGHT TO KERNEL
+            elementwise_rank += kernel(record, existing_records, element_id, self.__schema_length)
+        
+        if any(x < 100 for x in elementwise_rank):
+            print(self.count, elementwise_rank, record[2])
+            self.count += 1
 
-        # in an agent - state fashion
 
-        return rank
+        # if elementwise_rank < 100:
+        #     print(elementwise_rank, record[2])
 
+        # Select candidates for xpath sets.
+        # The purpose of this selection is to set contraint of computaional complexity.
+        # SORT AND SELECT TOP N ELEMENTS FOR EACH ELEMENT IN ELEMENTWISE_RANK
+
+
+        # Calculate rank based on tuple
+        # FIND A SET OF XPATHS WHICH BRINGS OUT MOST SIMILAR RANK VECTOR TO SAMPLE
+        tuple_rank = np.zeros(self.__consistency_embedding_length)
+        # for kernel in self.tuple_kernels:
+        #     tuple_rank += kernel()
+
+        return elementwise_rank
+
+    def __sample_existing_records(self):
+        return self.records
 
     # Methods for setup
-    def add_sample_data(self, sample_data, real_data = False)
+    def add_sample_data(self, sample_data, real_data=False):
         for sample_record in sample_data:
-            self.records.append(["SAMPLE", "SAMPLE", sample_record, 1]) # THE HIGHEST RANK AVAILABLE
+            for element_index, element in enumerate(sample_record):
+                self.records.append(["SAMPLE", "SAMPLE", element, element_index, 1]) # THE HIGHEST RANK AVAILABLE
 
-    def add_kernel(self, kernel):
-        if False: # SAFETY CHECK FOR KERNEL FUNCTION
+    def add_element_kernel(self, kernel, element_id):
+        if False: # NOTE ADD SAFETY CHECK FOR KERNEL FUNCTIONS
             raise Exception
         else:
-            self.kernels.append(kernel)
+            self.element_kernels.append((kernel, element_id))
         
+    def add_tuple_kernel(self, kernel):
+        if False: # NOTE ADD SAFETY CHECK FOR KERNEL FUNCTIONS
+            raise Exception
+        else:
+            self.tuple_kernels.append(kernel)
+
+
     # Methods for exploration
     def evaluate_results(self, results, will_save=True):
         # Evaluate rank
         for result in results:
-            # calculate_contrib_to_consistency
-            # caclulate_contrib_to_variety
-            rank = self.__calculate_rank(result[2])
-            if will_save == True:
-                self.records.append(result + [rank])    
+            rank = self.__calculate_rank(result)
+            # if will_save==True:
+            #     self.records.append(result + [rank])    
         
     def get_rank_delta(self):
         # [action_master, rank_delta]

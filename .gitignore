@@ -3,6 +3,7 @@
 
 ghostdriver.log
 
+cache.json
 **drivers
 **.vscode
 **venv

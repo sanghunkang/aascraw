@@ -1,11 +1,10 @@
 from .deliverer import Deliverer
 from .storage import Storage
 
-from lxml import etree
-from lxml import html
+from lxml import etree, html
 
 from io import StringIO
-
+import re
 
 def build_xpath(prefix, element, child_index):
     selector = f"[{child_index}]"
@@ -29,9 +28,16 @@ def find_all_xpaths(preceding_xpath, element, child_index):
         prev_tag_counts = {}
         for child in children:
             prev_tag_counts = update_prev_tag_counts(child.tag, prev_tag_counts)
-            xpaths =  xpaths + find_all_xpaths(prefix_xpath, child, prev_tag_counts[child.tag])
+            xpaths = xpaths + find_all_xpaths(prefix_xpath, child, prev_tag_counts[child.tag])
     return xpaths
 
+def cleanse_content(content):
+    content = re.sub(r"<(script).*?</\1>(?s)", "", content)
+    content = re.sub(r"<(style).*?</\1>(?s)", "", content)
+    content = re.sub(r"<.+>", "", content)
+    content = re.sub(r"[\n|\t]", "", content)
+    content = content.strip()
+    return content
 
 class Filterer():
     def __init__(self):
@@ -61,11 +67,14 @@ class Filterer():
         for action_to_execute in actions_to_execute:
             try:
                 elements = self.tree.xpath(action_to_execute)
-                print(action_to_execute)
-                print(elements[0].attrib)
+                
+                # Locate element and parse its content
                 content = etree.tostring(elements[0], pretty_print=True, encoding="UTF-8").decode("utf-8")
+                content = cleanse_content(content)
+                
+                # The method doesn't care about schema until this step
                 results.append([self.deliverer_action, action_to_execute, content])
-                print(content)
+                # print(content)
             except etree.XPathEvalError:
                 print("Invalid xpath")
         return results

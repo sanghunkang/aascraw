@@ -1,25 +1,30 @@
 from aascraw import Deliverer, Filterer, Storage
-import kernels
+from aascraw import kernels
+from aascraw.cache import Cache
 
-TEST_URL = "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=025&aid=0002928205"
-
-
-# - initial setup
-#     - 
-#         - crawled data. maybe I will insert it directly to database
-#         - xpaths sorted by ran
-
-#define desired schema for collected data. 
+# Initial setup
+# Define desired schema for collected data. 
 sample_data= [("some moderately long text about something", "someones name", "year-month-date", "XXXXX")]
 
-# define storage variables and insert the sample to the storage
-storage = Storage()
-storage.add_sample_data(sample_data, real_data = False)
-storage.add_kernel(kernels.rank_tuple_consistency)
-storage.add_kernel(kernels.rank_content_variance)
+# Define storage variables and insert the sample to the storage
+storage = Storage(schema_length=4, consistency_embedding_length=2)
+storage.add_sample_data(sample_data, real_data=False)
 
-deliverer = Deliverer(TEST_URL) 
+storage.add_element_kernel(kernels.rank_content_variance, 0)
+storage.add_element_kernel(kernels.rank_content_variance, 1)
+storage.add_element_kernel(kernels.rank_content_variance, 2)
+storage.add_element_kernel(kernels.rank_content_variance, 3)
+storage.add_element_kernel(kernels.rank_content_length, 0)
+storage.add_element_kernel(kernels.rank_content_length, 1)
+storage.add_element_kernel(kernels.rank_content_length, 2)
+storage.add_element_kernel(kernels.rank_content_length, 3)
+
+storage.add_tuple_kernel(kernels.rank_tuple_consistency)
+
+TEST_URL = "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=025&aid=0002928205"
+# deliverer = Deliverer(TEST_URL) 
 filterer = Filterer()
+cache = Cache("cache.json")
 
 rank_delta_deliverer = []
 rank_delta_filterer = []
@@ -27,9 +32,13 @@ rank_delta_filterer = []
 # Exploration step
 for i in range(1):
     # Action for agent 1
-    action_taken = deliverer.proceed()
-    page = deliverer.get_page()
-    
+    # action_taken = deliverer.proceed()
+    # page = deliverer.get_page()    
+    # cache.add(action_taken, page)
+    # cache.save()
+
+    action_taken, page = cache.get()
+
     # Action for agent 2
     filterer.load_page(action_taken, page)              
     filterer.update_action_space()             
@@ -39,6 +48,8 @@ for i in range(1):
     storage.evaluate_results(data)
     
     # # Update policy
+    # for record in storage.records:
+    #     print(record)
     # rank_delta_deliverer, rank_delta_filterer = storage.get_rank_delta()
     # deliverer.update_policy(rank_delta_deliverer) #
     # deliverer.update_action_space() #
