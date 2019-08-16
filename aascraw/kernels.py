@@ -13,7 +13,7 @@
 import numpy as np
 
 # I HAVE TO CONSIDER USING DECORATORS
-def rank_tuple_consistency(new_record, existing_records, element_id, record_length):
+def rank_tuple_consistency(new_record, existing_records):
     """
     This function returns an integer which indicates how much the relative sizes of contents is preserved.
     It is 0 if relative sizes of contents are perfectly different from previous records, 
@@ -23,7 +23,6 @@ def rank_tuple_consistency(new_record, existing_records, element_id, record_leng
     #     tag types   ~ 100, consider all. there are
     #     attributes  ~ 200, for now, concentrate in most common 5
     #     content types ~ ?
-    rank = np.zeros(record_length)
     # print(new_record)
     
     # TAKE LOG TO TAKE INTO ACCOUNT THAT STRUCTURED DATA ARE SHORT, WHEREAS UNSTRUCTURED DATA ARE LENGTHY
@@ -37,11 +36,12 @@ def rank_tuple_consistency(new_record, existing_records, element_id, record_leng
     # print(length_array_existing_records)
     # print(length_array_new_record)
 
-
+    rank = 0
     return rank
 
 def rank_tuple_vicinity(new_record, existing_records):
     rank = 0
+    print(new_record)
     return rank
 
 # Content level kernels

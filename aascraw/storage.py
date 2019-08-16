@@ -22,35 +22,47 @@ class Storage():
         self.__consistency_embedding_length = consistency_embedding_length
         self.count = 1
 
-    def __calculate_rank(self, record):
-        elementwise_rank = np.zeros(self.__schema_length)
-        existing_records = self.__sample_existing_records()
-                
-        # Calculate rank based on each element
-        for kernel, element_id in self.element_kernels:
-            # NOTE MULTIPLY WEIGHT TO KERNEL
-            elementwise_rank += kernel(record, existing_records, element_id, self.__schema_length)
-        
-        if any(x < 100 for x in elementwise_rank):
-            print(self.count, elementwise_rank, record[2])
-            self.count += 1
+    def __calculate_elementwise_rank(self, records):
+        for record in records:
+            elementwise_rank = np.zeros(self.__schema_length)
+            existing_records = self.__sample_existing_records()
+                    
+            # Calculate rank based on each element
+            for kernel, element_id in self.element_kernels:
+                # NOTE MULTIPLY WEIGHT TO KERNEL
+                elementwise_rank += kernel(record, existing_records, element_id, self.__schema_length)
+            
+            # if any(x < 100 for x in elementwise_rank):
+            #     print(self.count, elementwise_rank, record[2])
+            #     self.count += 1
 
+            record.append(elementwise_rank)
+        return records
 
+    def __sample_tuple(self, records):
         # if elementwise_rank < 100:
         #     print(elementwise_rank, record[2])
 
         # Select candidates for xpath sets.
         # The purpose of this selection is to set contraint of computaional complexity.
         # SORT AND SELECT TOP N ELEMENTS FOR EACH ELEMENT IN ELEMENTWISE_RANK
+        sample_size = 10
+        tuple_sample = []
+        for i in range(self.__schema_length):
+            candidates_for_schema_i = sorted(records, key=lambda x: x[3][i])[:sample_size]
+            tuple_sample.append(candidates_for_schema_i)
+            
+        return tuple_sample
 
-
+    def __calculate_tuplewise_rank(self, record):
         # Calculate rank based on tuple
         # FIND A SET OF XPATHS WHICH BRINGS OUT MOST SIMILAR RANK VECTOR TO SAMPLE
         tuple_rank = np.zeros(self.__consistency_embedding_length)
-        # for kernel in self.tuple_kernels:
-        #     tuple_rank += kernel()
+        existing_records = self.__sample_existing_records()
+        for kernel in self.tuple_kernels:
+            tuple_rank += kernel(record, existing_records)
 
-        return elementwise_rank
+        return tuplewise_rank
 
     def __sample_existing_records(self):
         return self.records
@@ -77,8 +89,9 @@ class Storage():
     # Methods for exploration
     def evaluate_results(self, results, will_save=True):
         # Evaluate rank
-        for result in results:
-            rank = self.__calculate_rank(result)
+        results = [self.__calculate_elementwise_rank(result) for result in results]
+        tuple_sample = self.__sample_tuple(results)
+        self.__calculate_tuplewise_rank(tuple_sample, results)
             # if will_save==True:
             #     self.records.append(result + [rank])    
         

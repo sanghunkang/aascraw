@@ -20,8 +20,10 @@ storage.add_element_kernel(kernels.rank_content_length, 2)
 storage.add_element_kernel(kernels.rank_content_length, 3)
 
 storage.add_tuple_kernel(kernels.rank_tuple_consistency)
+storage.add_tuple_kernel(kernels.rank_tuple_vicinity)
 
 TEST_URL = "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=025&aid=0002928205"
+# TEST_URL = "https://www.coupang.com/vp/products/25207211?itemId=97938090&vendorItemId=4162978715&q=%EC%88%98%EC%97%BC&itemsCount=36&searchId=be59377c412c4886811eb899ee6be14d&rank=5"
 # deliverer = Deliverer(TEST_URL) 
 filterer = Filterer()
 cache = Cache("cache.json")
@@ -31,15 +33,15 @@ rank_delta_filterer = []
 
 # Exploration step
 for i in range(1):
-    # Action for agent 1
+    # Deliverer actions
     # action_taken = deliverer.proceed()
     # page = deliverer.get_page()    
     # cache.add(action_taken, page)
     # cache.save()
 
-    action_taken, page = cache.get()
+    action_taken, page = cache.get() # dev
 
-    # Action for agent 2
+    # Filterer actions
     filterer.load_page(action_taken, page)              
     filterer.update_action_space()             
     data = filterer.run_page()
