@@ -1,6 +1,6 @@
 # aascraw
 
-*aascraw* is an automated-automated web crawler/scrper library. You define the schema of desired data and provide minimal amount of example, and the library will automatically fit actions which will execute web crawling/scraping.
+**aascraw** is an automated-automated web crawler/scrper library. You define the schema of desired data and provide minimal amount of example, and the library will automatically fit actions which will execute web crawling/scraping.
 
 # How it works?
 

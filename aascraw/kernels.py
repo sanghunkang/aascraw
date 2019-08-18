@@ -39,9 +39,12 @@ def rank_tuple_consistency(new_record, existing_records):
     rank = 0
     return rank
 
-def rank_tuple_vicinity(new_record, existing_records):
+def rank_tuple_vicinity(xpath_set, existing_records):
     rank = 0
-    print(new_record)
+    # print(new_record)
+    # print(len(xpath_set))
+    # for xpath in xpath_set:
+        # print(xpath[1], len(xpath[1]))
     return rank
 
 # Content level kernels

@@ -7,18 +7,15 @@ from aascraw.cache import Cache
 sample_data= [("some moderately long text about something", "someones name", "year-month-date", "XXXXX")]
 
 # Define storage variables and insert the sample to the storage
-storage = Storage(schema_length=4, consistency_embedding_length=2)
+storage = Storage(schema_length=4, consistency_embedding_length=2, use_default_kernels=False)
 storage.add_sample_data(sample_data, real_data=False)
 
-storage.add_element_kernel(kernels.rank_content_variance, 0)
-storage.add_element_kernel(kernels.rank_content_variance, 1)
-storage.add_element_kernel(kernels.rank_content_variance, 2)
-storage.add_element_kernel(kernels.rank_content_variance, 3)
-storage.add_element_kernel(kernels.rank_content_length, 0)
-storage.add_element_kernel(kernels.rank_content_length, 1)
-storage.add_element_kernel(kernels.rank_content_length, 2)
-storage.add_element_kernel(kernels.rank_content_length, 3)
+# Add elementwise kernels
+for i in range(4):
+    storage.add_element_kernel(kernels.rank_content_variance, i)
+    storage.add_element_kernel(kernels.rank_content_length, i)
 
+# Add tuplewise kernels
 storage.add_tuple_kernel(kernels.rank_tuple_consistency)
 storage.add_tuple_kernel(kernels.rank_tuple_vicinity)
 
