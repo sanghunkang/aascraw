@@ -10,14 +10,14 @@ import numpy as np
 # of xpaths.
 
 def recurse(prefix, matrix, index):
-    tupls = []
-    if len(matrix[0]) <= index:
-        for row in matrix:
-            tupls.append(prefix) # NOTE THE TYPE MUST BE TUPLE
+    if index < len(matrix):
+        candidate_tuples = []
+        for candidate in matrix[index]:            
+            # NOTE THE TYPE MUST BE TUPLE
+            candidate_tuples = candidate_tuples + recurse(prefix + [candidate], matrix, index+1)
     else:
-        for row in matrix:
-            tupls = tupls + recurse(prefix + row[index], matrix, index+1)
-    return tupls
+        candidate_tuples = [prefix]
+    return candidate_tuples
 
 class Storage():
     def __init__(self, schema_length, consistency_embedding_length, use_default_kernels):        
@@ -71,16 +71,8 @@ class Storage():
             tuple_sample.append(candidates_for_schema_i)
             
         # Combine candidates into sets
-
         result = recurse([], tuple_sample, 0)
-        # for candidates_for_schema_i in tuple_sample:
-        #     for candidates_for_schema_i in tuple_sample:
-        #         for candidates_for_schema_i in tuple_sample:
-        #             for candidates_for_schema_i in tuple_sample:
-        #                 result.append()
-        #         retur
-        print(len(result))
-        return tuple_sample
+        return result
 
     def __calculate_tuplewise_rank(self, tuple_sample, results):
         # FIND A SET OF XPATHS WHICH BRINGS OUT MOST SIMILAR RANK VECTOR TO SAMPLE
@@ -121,7 +113,8 @@ class Storage():
         # Evaluate rank
         results = self.__calculate_elementwise_rank(results)
         tuple_sample = self.__sample_tuple(results)
-        for x in tuple_sample:
+        print(len(tuple_sample))
+        for x in tuple_sample[0]:
             print(x)
         self.__calculate_tuplewise_rank(tuple_sample, results)
         #     # if will_save==True:
