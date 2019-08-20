@@ -41,10 +41,40 @@ def rank_tuple_consistency(new_record, existing_records):
 
 def rank_tuple_vicinity(xpath_set, existing_records):
     rank = 0
-    # print(new_record)
-    # print(len(xpath_set))
-    # for xpath in xpath_set:
-        # print(xpath[1], len(xpath[1]))
+    # Total length - differing parts
+
+    size_xpath_set = len(xpath_set)
+    
+    # I MIGHT HAVE TO CONSIDER IMPLEMETING THIS PART WITH CPP
+    pos = 0
+    numer = 0
+    denom = 0
+    while pos < len(xpath_set[0][0]):
+        vertical_slice = [None]*size_xpath_set
+        for i in range(size_xpath_set):
+            if pos < len(xpath_set[i][0]):
+                vertical_slice[i] = xpath_set[i][0][pos]
+            denom += 1 # MAYBE ADD ONLY WHEN TRUE
+
+        matching_score = 1 # Minimum
+        for i in range(size_xpath_set):
+            temp_matching_score = 1
+            c = vertical_slice[i]
+            for j in range(size_xpath_set):
+                if c == vertical_slice[j]:
+                    temp_matching_score += 1
+            
+            if matching_score < temp_matching_score:
+                matching_score = temp_matching_score
+        
+        print(vertical_slice)
+        numer += matching_score
+        pos += 1
+        
+    for xpath in xpath_set:
+        print(xpath[0])
+
+    print("Ranking vicinity", numer/denom)
     return rank
 
 # Content level kernels
