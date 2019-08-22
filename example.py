@@ -2,6 +2,8 @@ from aascraw import Deliverer, Filterer, Storage
 from aascraw import kernels
 from aascraw.cache import Cache
 
+from aascraw.kernels_src.kernels import rank_tuple_vicinity
+
 # Initial setup
 # Define desired schema for collected data. 
 sample_data= [("some moderately long text about something", "someones name", "year-month-date", "XXXXX")]
@@ -17,7 +19,8 @@ for i in range(4):
 
 # Add tuplewise kernels
 storage.add_tuple_kernel(kernels.rank_tuple_consistency)
-storage.add_tuple_kernel(kernels.rank_tuple_vicinity)
+storage.add_tuple_kernel(rank_tuple_vicinity)
+# storage.add_tuple_kernel(kernels.rank_tuple_vicinity)
 
 TEST_URL = "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=025&aid=0002928205"
 # TEST_URL = "https://www.coupang.com/vp/products/25207211?itemId=97938090&vendorItemId=4162978715&q=%EC%88%98%EC%97%BC&itemsCount=36&searchId=be59377c412c4886811eb899ee6be14d&rank=5"
