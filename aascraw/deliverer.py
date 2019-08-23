@@ -1,20 +1,20 @@
+# FORMATS
+#
+# DELIVERER_ACTIONS = 
+#   f"HREF::{URL}
+#   f"GET_PARAMS::{NAME}::{OPERATOR}
+#   f"EVENT::{undefined}
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+import re
+
 chrome_options = Options()
+chrome_options.add_argument("--headless")
 #chrome_options.add_argument("--disable-extensions")
 #chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--headless")
 # driver = webdriver.Chrome()
-
-# Step 1.
-# - action to move on to the next page
-#     at the very first execution of the iteration, it is the entry URL
-#     then, it will be triggered by various actions. e.g. inputting URL with different get query, clicking some button on a page. In any case, it will be sending request to server and receiving response back and working with it.
-
-#     The search space for next action will be determined by 
-#     How taskgiver selects action will be discussed later.
-
-
 
 def find_all_event_listeners(preceding_xpath, element):
     elements = element.find_elements_by_xpath("./*")
@@ -36,8 +36,6 @@ def find_all_hrefs(element):
         href = element.get_attribute("href")
         actions.append(f"HREF::{href}")
     return actions
-
-
 
 # Finding get parameters
 def parse_get_params(url):

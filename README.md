@@ -8,10 +8,15 @@ Actions of typical web crawlers can be summarised into the following two:
 - First, a programme finds an axis over which the programme will iterate.
 - Second, for each iteration in the loop, the programme locate and process desired elements and store into some form of storage.
 
-Aascraw follows deliver-filter-evaluate model, whose goal is to optimise these two operations. The first action is executed by `Deliverer` class and the second actions is executed by `Filterer` class. The `Storage` class evaluates the data crawled by collaboration of `Deliverer` and `Filterer`, and provides them feedbacks so that they can optimise actions for later iterations.
+Aascraw follows deliver-filter-evaluate model, whose goal is to optimise these two operations. The first action is executed by `Deliverer` class and the second actions is executed by `Filterer` class. The `Storage` class evaluates the data crawled by collaboration of `Deliverer` and `Filterer`, and provides them feedbacks so that they can optimise actions for later iterations. The objective of `Storage` is to minimise structure variance and maximise contents variance.
 
 # Kernels
 Kernels are python funtions which receives collected record as input and returns rank. Rank is a measure of desirability of input records.
+
+# Specifications
+## Deliverer
+## Filterer
+## Storage
 
 # Versioning Guide
 The versions of the library follows MAJOR.MINOR.PATCH scheme. Specfically:

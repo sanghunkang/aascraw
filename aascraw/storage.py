@@ -1,5 +1,5 @@
 #     reinforcement
-#         objective = minimise structure variance and maximise contents variance
+#  
 #             minimise structure variance
 #             if addition to the community spoils the structure more than the tolerance level, we reject it.
 
@@ -21,8 +21,14 @@ def recurse(prefix, matrix, index):
 
 class Storage():
     def __init__(self, schema_length, consistency_embedding_length, use_default_kernels):        
-        self.records = [] 
-        # [action_deliverer, action_filterer, crawled data, index, rank_delta]
+        self.records = []
+        # {
+        #     "deliverer_action": string, of format DELIVERER_ACTION,
+        #     "filterer_action": string, of format FILTERER_ACTION,
+        #     "crawled_data": string, some string extracted by filterer from html
+        #     "index": integer, indicates which index the crawled data might have relevance in the defined schema
+        #     "rank_delta": integer,
+        # } 
 
         self.element_kernels = []
         self.tuple_kernels = []
@@ -30,6 +36,7 @@ class Storage():
         self.__schema_length = schema_length
         self.__consistency_embedding_length = consistency_embedding_length
         self.count = 1
+        self.maximum_rank_delta = 1
 
         # Initialisation based on flag parameters
         if use_default_kernels==True:
@@ -92,10 +99,17 @@ class Storage():
     # Methods for setup
     def add_sample_data(self, sample_data, real_data=False):
         for sample_record in sample_data:
-            for element_index, element in enumerate(sample_record):
-                self.records.append(["SAMPLE", "SAMPLE", element, element_index, 1]) # THE HIGHEST RANK AVAILABLE
+            for i, element in enumerate(sample_record):
+                record = {
+                    "deliverer_action": "HREF::SAMPLE_ACTION",
+                    "filterer_action": "SAMPLE_ACTION",
+                    "crawled_data": element,
+                    "index": i,
+                    "rank_delta": self.maximum_rank_delta,
+                } 
+                self.records.append(record)
 
-    def add_element_kernel(self, kernel, element_id):
+    def add_element_kernel(self, kernel, element_index):
         if False: # NOTE ADD SAFETY CHECK FOR KERNEL FUNCTIONS
             raise Exception
         else:

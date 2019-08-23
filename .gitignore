@@ -8,6 +8,8 @@ cache.json
 **.vscode
 **venv
 
-
+# C/C++ compilation products
+*_wrap.c
+*.o
 
 chromedriver
