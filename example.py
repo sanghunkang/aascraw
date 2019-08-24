@@ -42,8 +42,8 @@ for i in range(1):
     action_taken, page = cache.get() # dev
 
     # Filterer actions
-    filterer.load_page(action_taken, page)              
-    filterer.update_action_space()             
+    filterer.load_page(action_taken, page) #(self.state["action_taken"], self.state["page"])              
+    filterer.update_action_space()   
     data = filterer.run_page()
 
     # Calculate reward

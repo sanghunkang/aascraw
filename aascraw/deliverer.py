@@ -2,8 +2,15 @@
 #
 # DELIVERER_ACTIONS = 
 #   f"HREF::{URL}
-#   f"GET_PARAMS::{NAME}::{OPERATOR}
+#   f"GET_PARAMS::{NAME};{OPERATOR}
 #   f"EVENT::{undefined}
+
+# # {
+#                 "action_type": "HREF",
+#                 "rank": self.new_action_default_rank
+#                 "url": entry_point,
+#             }
+###
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -79,57 +86,60 @@ class Deliverer():
         super().__init__()
         
         self.new_action_default_rank = 0
-        self.sum_rank = 0 # Just in case
-        # self.page = ""
-        # self.entry_point = entry_point
-        self.actions = {
-            f"HREF::{entry_point}": 1
-            #"GET_PARAM::operator>param" : 10,
-            #"HREF::https://naver.com/?some=get&query=params" : 15
-        }
-        # self.driver = webdriver.Chrome("./drivers/chromedriver", chrome_options=chrome_options)
+        self.sum_rank = 0 # Just in case        
+
+        # Agent        
         self.driver = webdriver.PhantomJS("./drivers/phantomjs")
-        # self.driver.get(entry_point)
-        # self.page = self.driver.find_element_by_xpath("html") # OTHER WAY TO FIND ROOT NODE
+        # self.driver = webdriver.Chrome("./drivers/chromedriver", chrome_options=chrome_options)
+        
+        # State
+        self.state = {
+            "actions_taken": "",
+            "page": ""
+        }
+
+        # Actions, which are set of possible transitiions
+        self.actions = {
+            f"href::{entry_point}": {
+                "action_type": "HREF",
+                "rank": self.new_action_default_rank,
+                "url": entry_point
+            }
+        }
+        
+    def proceed(self):
+        # Randomly select action
+        action = self.__randomly_select_action()
+
+        # Execute the selected action (triggering event or sending request)
+        if action["action_type"] == "HREF":
+            self.driver.get(action)
+        elif action["action_type"] == "GET_PARAM":
+            self.url = format_url(self.url, action)
+            self.driver.get(self.url)
+        elif action["action_type"] == "EVENT":
+            pass
+            #     xpath = format_xpath(action)
+            #     trigger = format_trigger(action)
+            #     self.driver.find_element_by_xpath(xpath).execute(trigger)
+        
+        # Get the document of currently displayed page
+        self.state = {
+            "action_taken": action,
+            "page": self.driver.execute_script("return document.documentElement.outerHTML;")
+        }
 
 
-    def __sample_action(self):
+    def __randomly_select_action(self):
         # Pick action in actions space weighted by rank
-        # SAMPLING ACTION
-        action_key = list(self.actions.keys())[0]
-
-        # something_selected = self.actions[action_key]
-
-        action_type = action_key.split("::")[0]
-        action = action_key.split("::")[1]
-        return action_type, action
+        # NOTE SAMPLING ACTION WILL BE IMPLEMENTED
+        for _, action in self.actions.items():
+            return action        
 
     def __sort_actions(self):
         self.actions = sorted(self.actions, key=lambda key, rank: rank)
 
-    def proceed(self):
-        action_type, action = self.__sample_action()
-        
-        if action_type == "HREF":
-            self.driver.get(action)
-        elif action_type == "GET_PARAM":
-            self.url = format_url(self.url, action)
-            self.driver.get(self.url)
-
-            # elif action_type == "EVENT":
-            #     xpath = format_xpath(action)
-            #     trigger = format_trigger(action)
-            #     self.driver.find_element_by_xpath(xpath).execute(trigger)
-            
-        self.page = self.driver.find_element_by_xpath("html") # OTHER WAY TO FIND ROOT NODE
-        return action_type + action
-
-    def get_page(self):
-        # Trigger event or send request to the server
-
-        # Get the document of currently displayed page
-        return self.driver.execute_script("return document.documentElement.outerHTML;")
-
+    
 
     def update_action_space(self):
         print("This function will look for possible event triggers and get queries")
