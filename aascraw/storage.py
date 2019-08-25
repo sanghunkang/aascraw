@@ -45,41 +45,19 @@ class Storage():
             self.add_tuple_kernel(SOME_KERNEL)
 
 
-    def __calculate_elementwise_rank(self, records):
+    def __calculate_elementwise_rank(self, records_being_evaluated):
         existing_records = self.__sample_existing_records()
         
-        for record in records:
+        for record_being_evaluated in records_being_evaluated:
             elementwise_rank = np.zeros(self.__schema_length)
                     
             # Calculate rank based on each element
             for kernel, element_id in self.element_kernels:
                 # NOTE MULTIPLY WEIGHT TO KERNEL
-                elementwise_rank += kernel(record, existing_records, element_id, self.__schema_length)
-            
-            # if any(x < 100 for x in elementwise_rank):
-            #     print(self.count, elementwise_rank, record[2])
-            #     self.count += 1
+                elementwise_rank += kernel(record_being_evaluated, existing_records, element_id, self.__schema_length)
 
-            record.append(elementwise_rank)
-        return records
-
-    def __sample_tuple(self, records):
-        # if elementwise_rank < 100:
-        #     print(elementwise_rank, record[2])
-
-        # The purpose of this selection is to set contraint of computaional complexity.
-        # SORT AND SELECT TOP N ELEMENTS FOR EACH ELEMENT IN ELEMENTWISE_RANK
-        sample_size = 10
-        tuple_sample = []
-        
-        # Select candidates for xpath sets.
-        for i in range(self.__schema_length):
-            candidates_for_schema_i = sorted(records, key=lambda x: x[3][i])[:sample_size]
-            tuple_sample.append(candidates_for_schema_i)
-            
-        # Combine candidates into sets
-        result = recurse([], tuple_sample, 0)
-        return result
+            record_being_evaluated["rank_delta"] = elementwise_rank
+        return records_being_evaluated
 
     def __calculate_tuplewise_rank(self, tuple_sample, results):
         # FIND A SET OF XPATHS WHICH BRINGS OUT MOST SIMILAR RANK VECTOR TO SAMPLE
@@ -92,6 +70,24 @@ class Storage():
                 tuplewise_rank += kernel(xpath_set, existing_records)
 
         return tuplewise_rank
+
+    def __sample_tuple(self, records):
+        # The purpose of this selection is to set contraint of computaional complexity.
+        # SORT AND SELECT TOP N ELEMENTS FOR EACH ELEMENT IN ELEMENTWISE_RANK
+        sample_size = 10
+        tuple_sample = []
+        
+        # Select top N candidates for xpath sets, ordered by rank delta
+        for i in range(self.__schema_length):
+            records_sorted_by_rank_delta = sorted(records, key=lambda x: x["rank_delta"][i])
+            candidates_for_schema_i = records_sorted_by_rank_delta[:sample_size]
+            tuple_sample.append(candidates_for_schema_i)
+            
+        # Combine candidates into sets
+        result = recurse([], tuple_sample, 0)
+        return result
+
+    
 
     def __sample_existing_records(self):
         return self.records
@@ -113,7 +109,7 @@ class Storage():
         if False: # NOTE ADD SAFETY CHECK FOR KERNEL FUNCTIONS
             raise Exception
         else:
-            self.element_kernels.append((kernel, element_id))
+            self.element_kernels.append((kernel, element_index))
         
     def add_tuple_kernel(self, kernel):
         if False: # NOTE ADD SAFETY CHECK FOR KERNEL FUNCTIONS
@@ -127,9 +123,9 @@ class Storage():
         # Evaluate rank
         results = self.__calculate_elementwise_rank(results)
         tuple_sample = self.__sample_tuple(results)
-        print(len(tuple_sample))
-        for x in tuple_sample[0]:
-            print(x)
+        # print(len(tuple_sample))
+        # for x in tuple_sample[0]:
+        #     print(x)
         self.__calculate_tuplewise_rank(tuple_sample, results)
         #     # if will_save==True:
         #     #     self.records.append(result + [rank])    

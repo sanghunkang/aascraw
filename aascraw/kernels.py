@@ -40,20 +40,20 @@ def rank_tuple_consistency(new_record, existing_records):
     return rank
 
 def rank_tuple_vicinity(xpath_set, existing_records):
+    # I MIGHT HAVE TO CONSIDER IMPLEMETING THIS PART WITH CPP
     rank = 0
-    # Total length - differing parts
-
     size_xpath_set = len(xpath_set)
     
-    # I MIGHT HAVE TO CONSIDER IMPLEMETING THIS PART WITH CPP
+    
+    # print(xpath_set)
     pos = 0
     numer = 0
     denom = 0
-    while pos < len(xpath_set[0][0]):
+    while pos < len(xpath_set[0]["filterer_action"]):
         vertical_slice = [None]*size_xpath_set
         for i in range(size_xpath_set):
-            if pos < len(xpath_set[i][0]):
-                vertical_slice[i] = xpath_set[i][0][pos]
+            if pos < len(xpath_set[i]["filterer_action"]):
+                vertical_slice[i] = xpath_set[i]["filterer_action"][pos]
             denom += 1 # MAYBE ADD ONLY WHEN TRUE
 
         matching_score = 1 # Minimum
@@ -67,17 +67,17 @@ def rank_tuple_vicinity(xpath_set, existing_records):
             if matching_score < temp_matching_score:
                 matching_score = temp_matching_score
         
-        print(vertical_slice)
+        # print(vertical_slice)
         numer += matching_score
         pos += 1
         
-    for xpath in xpath_set:
-        print(xpath[0])
+    # for xpath in xpath_set:
+    #     print(xpath["filterer_action"][:100])
 
     print("Ranking vicinity", numer/denom)
     return rank
 
-# Content level kernels
+# Elementwise kernels
 def rank_consistency_by_datatype(new_record, existing_records):
     rank = 0
     # FOR NOW, ONLY STRING, NUMBER, AND DATETIME-LIKE IS CONSIDERED
@@ -93,28 +93,27 @@ def rank_consistency_by_datatype(new_record, existing_records):
 
     return rank
 
-def rank_content_variance(new_record, existing_records, element_id, record_length):
+def rank_content_variance(new_record, existing_records, element_index, record_length):
     """
     This functions measures how much a new record is variant from previously collected records.
     It is 0 if it the new record is exactly the same with one of previously collected records,
     and it is 1 if the new record is completly different from previously collected records.
     """
+    # FOR NOW, ANY DIFFERENCE IN CONTENT IS CONSIDERED SIGNIFICANT VARIANCE
 
     rank = np.zeros(record_length)
     
-    # FOR NOW, ANY DIFFERENCE IN CONTENT IS CONSIDERED SIGNIFICANT VARIANCE
-    rank[element_id] = 1
+    rank[element_index] = 1
     for existing_record in existing_records: # IF existing_record[3]==element_id 
-        if existing_record[2] == new_record:
-            rank[element_id] = 0
-            
+        if existing_record["crawled_data"] == new_record["crawled_data"]:
+            rank[element_index] = 0
     return rank
 
 def rank_content_length(new_record, existing_records, element_id, record_length):
-    arr_existing_elements = [np.log(len(record[2])) for record in existing_records if record[3]==element_id]
+    arr_existing_elements = [np.log(len(record["crawled_data"])) for record in existing_records if record["index"]==element_id]
     
     score_mean_existing_elements = np.mean(arr_existing_elements)
-    score_new_record = np.log(len(new_record[2]))
+    score_new_record = np.log(len(new_record["crawled_data"]))
     
     rank = np.zeros(record_length)
     rank[element_id] = np.square(score_new_record - score_mean_existing_elements)

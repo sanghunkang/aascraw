@@ -48,7 +48,7 @@ class Filterer():
         }
 
         self.results = [
-            
+
         ]
 
 
@@ -64,19 +64,32 @@ class Filterer():
         self.tree = html.fromstring(self.page)
 
     def run_page(self):
-        # Locate element
+        
         actions_to_execute = self.__sample_action()
+        
+        
         results = []
         for action_to_execute in actions_to_execute:
             try:
+                # Locate element
                 elements = self.tree.xpath(action_to_execute)
                 
-                # Locate element and parse its content
+                # Parse its content
                 content = etree.tostring(elements[0], pretty_print=True, encoding="UTF-8").decode("utf-8")
                 content = cleanse_content(content)
                 
                 # The method doesn't care about schema until this step
-                results.append([self.deliverer_action, action_to_execute, content])
+                # results.append(
+                #     [self.deliverer_action, action_to_execute, content]
+                # )
+
+                results.append({
+                    "deliverer_action": self.deliverer_action,
+                    "filterer_action": action_to_execute,
+                    "crawled_data": content,
+                    "index": None,          # NOTE MAYBE SOMETHING ELSE INDICATING IT WILL BE IMPLEMENTED LATER ON
+                    "rank_delta": None,     # NOTE MAYBE SOMETHING ELSE INDICATING IT WILL BE IMPLEMENTED LATER ON
+                })
                 # print(content)
             except etree.XPathEvalError:
                 print("Invalid xpath")
