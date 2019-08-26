@@ -62,19 +62,19 @@ class Storage():
     def __calculate_tuplewise_rank(self, tuple_sample, results):
         # FIND A SET OF XPATHS WHICH BRINGS OUT MOST SIMILAR RANK VECTOR TO SAMPLE
         # Calculate rank based on tuple
-        tuplewise_rank = np.zeros(self.__consistency_embedding_length)
+        tuplewise_rank_delta = np.zeros(self.__consistency_embedding_length)
         existing_records = self.__sample_existing_records()
         
         for xpath_set in tuple_sample:
             for kernel in self.tuple_kernels:
-                tuplewise_rank += kernel(xpath_set, existing_records)
+                tuplewise_rank_delta += kernel(xpath_set, existing_records)
 
-        return tuplewise_rank
+        return tuplewise_rank_delta
 
     def __sample_tuple(self, records):
         # The purpose of this selection is to set contraint of computaional complexity.
         # SORT AND SELECT TOP N ELEMENTS FOR EACH ELEMENT IN ELEMENTWISE_RANK
-        sample_size = 10
+        sample_size = 5
         tuple_sample = []
         
         # Select top N candidates for xpath sets, ordered by rank delta
