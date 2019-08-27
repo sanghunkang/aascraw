@@ -11,7 +11,37 @@
 # Kernels may deal with single element of a result tuple, or the entire tuple itself.
 
 import numpy as np
+
 from functools import reduce
+import ctypes
+
+SIZE_XPATH_SET = 4
+c_kernels = ctypes.CDLL("./aascraw/c_kernels.so")
+
+# c_kernels.rank_tuple_vicinity.argtypes = (ctypes.c_float*4, )
+
+c_kernels.rank_tuple_vicinity.argtypes = (ctypes.c_wchar_p * SIZE_XPATH_SET, )
+c_kernels.rank_tuple_vicinity.restype = ctypes.c_float
+
+arr = ctypes.c_wchar_p * SIZE_XPATH_SET
+parameter_array = arr(*["array", "of", "strings", "asdasd"])
+
+
+print(c_kernels.rank_tuple_vicinity(parameter_array))
+# (xpath_set, existing_records)
+# rank_tuple_vicinity = c_kernels.rank_tuple_vicinity  
+def rank_tuple_vicinity(xpath_set, existing_records):
+
+    # actions = xpath_set[i]["filterer_action"]
+    filterer_actions = [xpath["filterer_action"] for xpath in xpath_set]
+    print(filterer_actions)
+    c_xpath_set = (ctypes.c_wchar_p * SIZE_XPATH_SET)(*filterer_actions)
+
+    rank = c_kernels.rank_tuple_vicinity(c_xpath_set)
+    return rank
+
+
+
 
 # I HAVE TO CONSIDER USING DECORATORS
 def rank_tuple_consistency(new_record, existing_records):
@@ -40,56 +70,56 @@ def rank_tuple_consistency(new_record, existing_records):
     rank = 0
     return rank
 
-def rank_tuple_vicinity(xpath_set, existing_records):
-    # I MIGHT HAVE TO CONSIDER IMPLEMETING THIS PART WITH CPP
-    rank = 0
+# def rank_tuple_vicinity(xpath_set, existing_records):
+#     # I MIGHT HAVE TO CONSIDER IMPLEMETING THIS PART WITH CPP
+#     rank = 0
     
     
-    # print(xpath_set)
-    pos = 0
-    numer = 0
-    denom = 0
-    max_xpath = 0
-    # reduce(lambda x1, x2: max(len(x1), len(x2)), xpath_set)
-    i = 0
-    while i < len(xpath_set):
-        max_xpath = max(len(xpath_set[i]["filterer_action"]), max_xpath)
-        i += 1
+#     # print(xpath_set)
+#     pos = 0
+#     numer = 0
+#     denom = 0
+#     max_xpath = 0
+#     # reduce(lambda x1, x2: max(len(x1), len(x2)), xpath_set)
+#     i = 0
+#     while i < len(xpath_set):
+#         max_xpath = max(len(xpath_set[i]["filterer_action"]), max_xpath)
+#         i += 1
 
-    while pos < max_xpath: #len(xpath_set[0]["filterer_action"]):
-        vertical_slice = [None]*len(xpath_set)
+#     while pos < max_xpath: #len(xpath_set[0]["filterer_action"]):
+#         vertical_slice = [None]*len(xpath_set)
 
-        i = 0
-        while i < len(xpath_set):
-            if pos < len(xpath_set[i]["filterer_action"]):
-                vertical_slice[i] = xpath_set[i]["filterer_action"][pos]
-            denom += 1 # MAYBE ADD ONLY WHEN TRUE
-            i += 1
+#         i = 0
+#         while i < len(xpath_set):
+#             if pos < len(xpath_set[i]["filterer_action"]):
+#                 vertical_slice[i] = xpath_set[i]["filterer_action"][pos]
+#             denom += 1 # MAYBE ADD ONLY WHEN TRUE
+#             i += 1
 
-        matching_score = 1 # Minimum
-        i = 0
-        while i < len(xpath_set):
-            temp_matching_score = 1
-            c = vertical_slice[i]
-            j = 0
-            while j < len(xpath_set):
-                if i!= j and c == vertical_slice[j]: # I THINK THIS OPERATION IS REDUNDANT
-                    temp_matching_score += 1
-                j += 1
+#         matching_score = 1 # Minimum
+#         i = 0
+#         while i < len(xpath_set):
+#             temp_matching_score = 1
+#             c = vertical_slice[i]
+#             j = 0
+#             while j < len(xpath_set):
+#                 if i!= j and c == vertical_slice[j]: # I THINK THIS OPERATION IS REDUNDANT
+#                     temp_matching_score += 1
+#                 j += 1
 
-            if matching_score < temp_matching_score:
-                matching_score = temp_matching_score
-            i += 1
+#             if matching_score < temp_matching_score:
+#                 matching_score = temp_matching_score
+#             i += 1
         
-        # print(vertical_slice)
-        numer += matching_score
-        pos += 1
+#         # print(vertical_slice)
+#         numer += matching_score
+#         pos += 1
         
-    # for xpath in xpath_set:
-    #     print(xpath["filterer_action"][:100])
+#     # for xpath in xpath_set:
+#     #     print(xpath["filterer_action"][:100])
 
-    print("Ranking vicinity", numer/denom)
-    return rank
+#     print("Ranking vicinity", numer/denom)
+#     return rank
 
 # Elementwise kernels
 def rank_consistency_by_datatype(new_record, existing_records):

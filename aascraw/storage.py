@@ -57,6 +57,7 @@ class Storage():
                 elementwise_rank += kernel(record_being_evaluated, existing_records, element_id, self.__schema_length)
 
             record_being_evaluated["rank_delta"] = elementwise_rank
+            # print(record_being_evaluated)
         return records_being_evaluated
 
     def __calculate_tuplewise_rank(self, tuple_sample, results):

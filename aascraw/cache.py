@@ -10,7 +10,7 @@ class Cache():
                 self.__cache = json.loads(f.read())
             except:
                 pass
-        print(self.__cache)
+        # print(self.__cache)
 
     def add(self, action_taken, page):
         self.__cache.append([action_taken, page])

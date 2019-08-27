@@ -11,5 +11,6 @@ cache.json
 # C/C++ compilation products
 *_wrap.c
 *.o
+*.so
 
 chromedriver

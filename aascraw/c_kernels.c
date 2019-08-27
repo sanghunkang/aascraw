@@ -1,15 +1,16 @@
-#include "iostream"
-#include <vector> 
-using namespace std; 
+// #include "iostream"
+// #include <vector> 
+// using namespace std; 
 
-float rank_tuple_vicinity(vector<string> xpath_set)
+// float rank_tuple_vicinity(char xpath_set[4][500])
+
+float rank_tuple_vicinity(char ** xpath_set)
 {
-    cout << "executing cpp function" << endl;
     // DO I REALLY NEED VECTOR, OR IS IT OKAY WITH STRING ARRAYS?
     // int pos = 0;
     // int numer = 0;
     // int denom = 0;
-
+    printf("%c\n", xpath_set[0][0]);
     // while (pos < xpath_set[0].size()) 
     // {
 

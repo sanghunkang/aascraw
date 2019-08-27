@@ -92,7 +92,8 @@ class Filterer():
                 })
                 # print(content)
             except etree.XPathEvalError:
-                print("Invalid xpath")
+                pass
+                # print("Invalid xpath")
         return results
     
     def update_action_space(self):
