@@ -1,5 +1,5 @@
 from lxml import etree, html
-
+import numpy as np
 from io import StringIO
 import re
 
@@ -44,8 +44,11 @@ class Filterer():
         self.sum_rank = 0
         
         self.actions = {
-            #XPath to locate an element: rank
+            #XPath to locate an element: [rank, array_id]
+            #XPath to locate an element: id at array
         }
+
+        self.vector_alpha = [] 
 
         self.results = [
 
@@ -56,6 +59,12 @@ class Filterer():
         pass
 
     def __sample_action(self):
+        # The probability to sample actions follow Dirichlet distribution
+        sample_size = 10
+        vector_alpha = # Array of ranks at associated positions
+        np.random.dirichlet(vector_alpha, sample_size).transpose()
+        # np.random.dirichlet((10, 5, 3), 20).transpose()
+
         return self.actions.keys()
 
     def load_page(self, action_taken, page):
