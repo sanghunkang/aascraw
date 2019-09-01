@@ -5,14 +5,18 @@ import numpy as np
 from functools import reduce
 import ctypes
 
+import spammodule
+
 SIZE_XPATH_SET = 4
-c_kernels = ctypes.CDLL("./aascraw/c_kernels.so")
+c_kernels = ctypes.CDLL("./c_kernels.o")
 
 # c_kernels.rank_tuple_vicinity.argtypes = (ctypes.c_float*4, )
 
 c_kernels.rank_tuple_vicinity.argtypes = (ctypes.c_wchar_p * SIZE_XPATH_SET, )
 # c_kernels.rank_tuple_vicinity.restype = ctypes.c_float
 c_kernels.rank_tuple_vicinity.restype = ctypes.c_int
+print(c_kernels.rank_tuple_vicinity)
+
 
 arr = ctypes.c_wchar_p * SIZE_XPATH_SET
 parameter_array = arr(*["array", "of", "strings", "asdasd"])
