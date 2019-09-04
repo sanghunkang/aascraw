@@ -1,61 +1,52 @@
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
 
-static PyObject * spam_system(PyObject *self, PyObject *args)
-{
-    const char *command;
-    int sts;
+// # def rank_tuple_vicinity(xpath_set, existing_records):
+// #     # I MIGHT HAVE TO CONSIDER IMPLEMETING THIS PART WITH CPP
+// #     rank = 0
+    
+    
+// #     # print(xpath_set)
+// #     pos = 0
+// #     numer = 0
+// #     denom = 0
+// #     max_xpath = 0
+// #     # reduce(lambda x1, x2: max(len(x1), len(x2)), xpath_set)
+// #     i = 0
+// #     while i < len(xpath_set):
+// #         max_xpath = max(len(xpath_set[i]["filterer_action"]), max_xpath)
+// #         i += 1
 
-    if (!PyArg_ParseTuple(args, "s", &command))
-        return NULL;
-    sts = system(command);
-    return PyLong_FromLong(sts);
-}
+// #     while pos < max_xpath: #len(xpath_set[0]["filterer_action"]):
+// #         vertical_slice = [None]*len(xpath_set)
 
-static PyMethodDef SpamMethods[] = {
-    {"system",  spam_system, METH_VARARGS, "Execute a shell command."},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
+// #         i = 0
+// #         while i < len(xpath_set):
+// #             if pos < len(xpath_set[i]["filterer_action"]):
+// #                 vertical_slice[i] = xpath_set[i]["filterer_action"][pos]
+// #             denom += 1 # MAYBE ADD ONLY WHEN TRUE
+// #             i += 1
 
-static struct PyModuleDef spammodule = {
-    PyModuleDef_HEAD_INIT,
-    "spam",   /* name of module */
-    NULL, //spam_doc, /* module documentation, may be NULL */
-    -1,       /* size of per-interpreter state of the module,
-                 or -1 if the module keeps state in global variables. */
-    SpamMethods
-};
+// #         matching_score = 1 # Minimum
+// #         i = 0
+// #         while i < len(xpath_set):
+// #             temp_matching_score = 1
+// #             c = vertical_slice[i]
+// #             j = 0
+// #             while j < len(xpath_set):
+// #                 if i!= j and c == vertical_slice[j]: # I THINK THIS OPERATION IS REDUNDANT
+// #                     temp_matching_score += 1
+// #                 j += 1
 
-PyMODINIT_FUNC PyInit_spam(void)
-{
-    return PyModule_Create(&spammodule);
-}
+// #             if matching_score < temp_matching_score:
+// #                 matching_score = temp_matching_score
+// #             i += 1
+        
+// #         # print(vertical_slice)
+// #         numer += matching_score
+// #         pos += 1
+        
+// #     # for xpath in xpath_set:
+// #     #     print(xpath["filterer_action"][:100])
 
-int
-main(int argc, char *argv[])
-{
-    wchar_t *program = Py_DecodeLocale(argv[0], NULL);
-    if (program == NULL) {
-        fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
-        exit(1);
-    }
-
-    /* Add a built-in module, before Py_Initialize */
-    PyImport_AppendInittab("spam", PyInit_spam);
-
-    /* Pass argv[0] to the Python interpreter */
-    Py_SetProgramName(program);
-
-    /* Initialize the Python interpreter.  Required. */
-    Py_Initialize();
-
-    /* Optionally import the module; alternatively,
-       import can be deferred until the embedded script
-       imports it. */
-    PyImport_ImportModule("spam");
-
-
-    PyMem_RawFree(program);
-    return 0;
-}
+// #     print("Ranking vicinity", numer/denom)
+// #     return rank
 
