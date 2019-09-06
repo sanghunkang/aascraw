@@ -1,37 +1,33 @@
 # Test module for kernel functions
-
 import numpy as np
 
 from functools import reduce
 import ctypes
 
+c_kernels = ctypes.CDLL("./kernels.so")
 
-SIZE_XPATH_SET = 4
-c_kernels = ctypes.CDLL("./c_kernels.o")
-
-
-c_kernels.rank_tuple_vicinity.argtypes = (ctypes.c_wchar_p * SIZE_XPATH_SET, )
-# c_kernels.rank_tuple_vicinity.restype = ctypes.c_float
-c_kernels.rank_tuple_vicinity.restype = ctypes.c_int
-print(c_kernels.rank_tuple_vicinity)
-
-
-arr = ctypes.c_wchar_p * SIZE_XPATH_SET
-parameter_array = arr(*["array", "of", "strings", "asdasd"])
+# Test Inputs
+xpath_set = [
+    "Some",
+    "arbitrary",
+    "length",
+    "string"
+]
 
 
-# print(c_kernels.rank_tuple_vicinity(parameter_array))
-# (xpath_set, existing_records)
-# rank_tuple_vicinity = c_kernels.rank_tuple_vicinity  
+
+# rank_tuple_vicinity
+SIZE_XPATH_SET = len(xpath_set)
+c_kernels.rank_tuple_vicinity.restype = ctypes.c_float #ctypes.c_int
+
 def rank_tuple_vicinity(xpath_set, existing_records):
+    xpath_set.append(None)
+    c_kernels.rank_tuple_vicinity.argtypes = (ctypes.c_wchar_p * (SIZE_XPATH_SET+1), )
 
-    # actions = xpath_set[i]["filterer_action"]
-    filterer_actions = [xpath["filterer_action"] for xpath in xpath_set]
-    # print(filterer_actions)
-    c_xpath_set = (ctypes.c_wchar_p * SIZE_XPATH_SET)(*filterer_actions)
+    arr = ctypes.c_wchar_p * (SIZE_XPATH_SET+1)
+    parameter_array = arr(*xpath_set)
+    return c_kernels.rank_tuple_vicinity(parameter_array)
 
-    print(len(filterer_actions))
-    print(c_xpath_set)
-    rank = c_kernels.rank_tuple_vicinity(c_xpath_set)
-    print(rank)
-    return rank
+print(SIZE_XPATH_SET)
+aa = rank_tuple_vicinity(xpath_set, None)
+print(aa)
