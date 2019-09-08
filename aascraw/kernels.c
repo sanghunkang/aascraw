@@ -1,6 +1,5 @@
 #include <stdio.h> 
 
-
 float rank_tuple_vicinity(char **xpath_set)
 {
     // float xpath_set_length = (float)sizeof(xpath_set);
@@ -14,14 +13,28 @@ float rank_tuple_vicinity(char **xpath_set)
         xpath_set++;
     }
         
-    
+    int xpath_max_length = 0;
+    int xpath_max_length_tmp = 0;
+    while (*xpath_set != NULL)
+    {
+        xpath_max_length_tmp = 0;
+        while (**xpath_set != NULL)
+        {
+            xpath_max_length_tmp++;
+            *(*xpath_set)++;
+        }
+
+        if (xpath_max_length < xpath_max_length_tmp)
+        {
+            xpath_max_length = xpath_max_length_tmp;
+        }
+    }
+
+
     int pos = 0;
     while (pos < xpath_set_length)
     {
         char vertical_slice[xpath_set_length]; // = xpa [None]*len(xpath_set);
-        pos++;
-    }
-
     // #     while pos < max_xpath: #len(xpath_set[0]["filterer_action"]):
     // #         vertical_slice = [None]*len(xpath_set)
 
@@ -51,11 +64,14 @@ float rank_tuple_vicinity(char **xpath_set)
     // #         numer += matching_score
     // #         pos += 1
             
+        pos++;
+    }
     // #     # for xpath in xpath_set:
     // #     #     print(xpath["filterer_action"][:100])
 
     // #     print("Ranking vicinity", numer/denom)
     // #     return rank
+
 
     // return 1.0;
     return xpath_set_length;
