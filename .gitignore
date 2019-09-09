@@ -1,7 +1,9 @@
 **/.DS_Store
 **/__pycache__
 
+# Drivers
 ghostdriver.log
+chromedriver
 
 cache.json
 **drivers
@@ -13,4 +15,7 @@ cache.json
 *.o
 *.so
 
-chromedriver
+# Build outputs
+**.egg-info/
+**/build
+**/dist
